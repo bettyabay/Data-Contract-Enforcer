@@ -9,43 +9,59 @@
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <div class="app">
+<div class="app">
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-      <div class="sidebar-logo">
-        <span>Enforcer</span>
-        Data Contract
-      </div>
+  <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">CE</div>
+      <div class="brand-name">Contract Enforcer</div>
+      <div class="brand-sub">Schema integrity platform</div>
+    </div>
 
+    <div class="nav-section">
+      <div class="nav-section-label">Menu</div>
       <button class="nav-item active" data-page="overview">
-        <span class="icon">◈</span> Overview
+        <span class="nav-icon">⊞</span> Overview
       </button>
       <button class="nav-item" data-page="contracts">
-        <span class="icon">📄</span> Contracts
+        <span class="nav-icon">◻</span> Contracts
       </button>
       <button class="nav-item" data-page="reports">
-        <span class="icon">✓</span> Validation Reports
+        <span class="nav-icon">✓</span> Validation Reports
       </button>
       <button class="nav-item" data-page="baselines">
-        <span class="icon">∿</span> Baselines
+        <span class="nav-icon">∿</span> Baselines
       </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Reports</div>
       <button class="nav-item" data-page="enforcer">
-        <span class="icon">🔒</span> Enforcer Report
+        <span class="nav-icon">◈</span> Enforcer Report
+        <span class="nav-badge">Ph3</span>
       </button>
-    </nav>
+    </div>
 
-    <!-- Main content -->
-    <main class="main">
-      <div id="main-content">
-        <div class="loading">Loading dashboard…</div>
+    <div class="sidebar-footer">
+      <div class="phase-pill">
+        <strong>Phase 1 Active</strong>
+        Generator &amp; Runner
       </div>
-    </main>
+    </div>
+  </nav>
 
-    <!-- Detail panel (slides in from right) -->
-    <aside id="detail-panel" class="detail-panel"></aside>
+  <!-- ── Main ───────────────────────────────────────────────────────────── -->
+  <main class="main">
+    <div id="main-content">
+      <div class="loading">Loading dashboard…</div>
+    </div>
+  </main>
 
-  </div>
-  <script src="/app.js"></script>
+  <!-- ── Detail panel ───────────────────────────────────────────────────── -->
+  <aside id="detail-panel" class="detail-panel"></aside>
+
+</div>
+<script src="/app.js"></script>
 </body>
 </html>
