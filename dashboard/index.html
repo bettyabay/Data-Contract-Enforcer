@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Contract Enforcer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <span>Enforcer</span>
+        Data Contract
+      </div>
+
+      <button class="nav-item active" data-page="overview">
+        <span class="icon">◈</span> Overview
+      </button>
+      <button class="nav-item" data-page="contracts">
+        <span class="icon">📄</span> Contracts
+      </button>
+      <button class="nav-item" data-page="reports">
+        <span class="icon">✓</span> Validation Reports
+      </button>
+      <button class="nav-item" data-page="baselines">
+        <span class="icon">∿</span> Baselines
+      </button>
+      <button class="nav-item" data-page="enforcer">
+        <span class="icon">🔒</span> Enforcer Report
+      </button>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+      <div id="main-content">
+        <div class="loading">Loading dashboard…</div>
+      </div>
+    </main>
+
+    <!-- Detail panel (slides in from right) -->
+    <aside id="detail-panel" class="detail-panel"></aside>
+
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
