@@ -1,0 +1,7 @@
+docs/
+.specstory/
+.vscode/
+__pycache__/
+*.pyc
+.pytest_cache/
+outputs/week3/extractions_violated.jsonl

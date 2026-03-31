@@ -1,0 +1,111 @@
+apiVersion: v2.2.2
+kind: DataContract
+id: week3-document-refinery-extractions
+version: 1.0.0
+description: Auto-generated contract for outputs/week3/extractions.jsonl
+source:
+  path: outputs/week3/extractions.jsonl
+  sha256: dc7f5df79cfffea1f2f7bf668700713f8c1087b7273256dc11a01123ade1f562
+  record_count: 60
+  generated_at: '2026-03-31T10:59:41.065095Z'
+schema:
+  type: object
+  properties:
+    doc_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+    source_path:
+      type: string
+      required: true
+    source_hash:
+      type: string
+      required: true
+    extraction_model:
+      type: string
+      required: true
+      enum:
+      - claude-3-5-sonnet-20241022
+      - claude-3-haiku-20240307
+    processing_time_ms:
+      type: integer
+      required: true
+      minimum: 1
+      maximum: 4956.0
+    token_count_input:
+      type: integer
+      required: true
+      minimum: 1
+      maximum: 7781.0
+    token_count_output:
+      type: integer
+      required: true
+      minimum: 1
+      maximum: 1500.0
+    extracted_at:
+      type: string
+      required: true
+      format: date-time
+    fact_fact_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+    fact_text:
+      type: string
+      required: true
+    fact_confidence:
+      type: number
+      required: true
+      minimum: 0.0
+      maximum: 1.0
+      description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+        to 0-100 percentage scale.
+    fact_page_ref:
+      type: number
+      required: false
+      minimum: 1.0
+      maximum: 20.0
+    fact_source_excerpt:
+      type: string
+      required: true
+quality:
+  checks:
+  - type: statistical_drift
+    field: processing_time_ms
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: token_count_input
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: token_count_output
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: format
+    field: extracted_at
+    format: date-time
+    severity: CRITICAL
+  - type: range
+    field: fact_confidence
+    minimum: 0.0
+    maximum: 1.0
+    severity: CRITICAL
+  - type: statistical_drift
+    field: fact_confidence
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: fact_page_ref
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+lineage:
+  upstream: []
+  downstream:
+  - id: file::src/api/routes.py
+    fields_consumed:
+    - doc_id
+    - extracted_facts
+    - entities

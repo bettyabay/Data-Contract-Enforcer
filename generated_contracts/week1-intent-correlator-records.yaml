@@ -1,0 +1,74 @@
+apiVersion: v2.2.2
+kind: DataContract
+id: week1-intent-correlator-records
+version: 1.0.0
+description: Auto-generated contract for outputs/week1/intent_records.jsonl
+source:
+  path: outputs/week1/intent_records.jsonl
+  sha256: f889e2e186c2bef2c6566516408980d2b7521a65acc7e9936584690ba8ba0c07
+  record_count: 15
+  generated_at: '2026-03-31T10:59:59.778754Z'
+schema:
+  type: object
+  properties:
+    intent_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+    description:
+      type: string
+      required: true
+    created_at:
+      type: string
+      required: true
+      format: date-time
+    ref_file:
+      type: string
+      required: true
+    ref_line_start:
+      type: integer
+      required: true
+      minimum: 7.0
+      maximum: 197.0
+    ref_line_end:
+      type: integer
+      required: true
+      minimum: 18.0
+      maximum: 243.0
+    ref_symbol:
+      type: string
+      required: true
+    ref_confidence:
+      type: number
+      required: true
+      minimum: 0.0
+      maximum: 1.0
+      description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+        to 0-100 percentage scale.
+quality:
+  checks:
+  - type: format
+    field: created_at
+    format: date-time
+    severity: CRITICAL
+  - type: statistical_drift
+    field: ref_line_start
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: ref_line_end
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: range
+    field: ref_confidence
+    minimum: 0.0
+    maximum: 1.0
+    severity: CRITICAL
+  - type: statistical_drift
+    field: ref_confidence
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+lineage:
+  upstream: []
+  downstream: []
