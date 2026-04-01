@@ -1,0 +1,15 @@
+{
+  "contract_id": "langsmith_traces",
+  "contract_version": "unknown",
+  "data_path": "outputs/traces/runs.jsonl",
+  "record_count": 60,
+  "validated_at": "2026-04-01T11:15:29.123664Z",
+  "overall_status": "PASS",
+  "violation_count": 0,
+  "violations": [],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 0,
+    "WARN": 0
+  }
+}

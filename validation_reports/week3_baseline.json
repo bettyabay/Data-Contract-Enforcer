@@ -1,0 +1,15 @@
+{
+  "contract_id": "week3_extractions",
+  "contract_version": "unknown",
+  "data_path": "outputs/week3/extractions.jsonl",
+  "record_count": 60,
+  "validated_at": "2026-04-01T11:15:28.953328Z",
+  "overall_status": "PASS",
+  "violation_count": 0,
+  "violations": [],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 0,
+    "WARN": 0
+  }
+}

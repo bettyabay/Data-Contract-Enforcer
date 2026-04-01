@@ -1,0 +1,88 @@
+apiVersion: v3.0.0
+kind: DataContract
+id: week4_lineage
+info:
+  title: Week 4 Code Cartographer — Lineage Snapshots
+  version: 1.0.0
+  owner: week4-team
+  description: One record per lineage snapshot. Each snapshot is a point-in-time graph
+    of nodes and edges representing data dependencies.
+servers:
+  local:
+    type: local
+    path: outputs/week4/lineage_snapshots.jsonl
+    format: jsonl
+terms:
+  usage: Internal inter-system data contract. Do not publish.
+  limitations: See schema constraints for field-level limitations.
+source:
+  path: outputs/week4/lineage_snapshots.jsonl
+  sha256: cd1284692ef3437428f4a7adf49a52f5e05b9a601fc723de26de65e7285d7f93
+  record_count: 3
+  generated_at: '2026-04-01T10:28:48.102526Z'
+schema:
+  type: object
+  properties:
+    snapshot_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+      enum:
+      - 2dfcd6fb-19c2-41e4-8f02-0df80a67b9d0
+      - c61bd006-fa82-46f5-b8ed-c8d386cda18c
+      - db904171-f460-4b6c-9ca3-204a958c8f8e
+    codebase_root:
+      type: string
+      required: true
+      enum:
+      - /workspace/data-contract-enforcer
+    git_commit:
+      type: string
+      required: true
+      enum:
+      - 4f5a3df0340605e10d997d5c9c473c7c7627448c
+      - e2f4461e827ab3df48c5cb2997dbe8ec1f80f4af
+      - f85508aa99e4dc82da66c1adc52c4c0e13411505
+    captured_at:
+      type: string
+      required: true
+      format: date-time
+      enum:
+      - '2025-01-15T14:22:00Z'
+      - '2025-01-16T14:23:00Z'
+      - '2025-01-17T14:09:00Z'
+    node_node_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    node_type:
+      type: string
+      required: true
+      enum:
+      - FILE
+    node_label:
+      type: string
+      required: true
+quality:
+  type: SodaChecks
+  specification:
+    checks for week4_lineage:
+    - row_count >= 1
+    - missing_count(snapshot_id) = 0
+    - duplicate_count(snapshot_id) = 0
+    - missing_count(codebase_root) = 0
+    - missing_count(git_commit) = 0
+    - missing_count(captured_at) = 0
+    - 'invalid_count(captured_at) = 0  # format: date-time'
+    - missing_count(node_node_id) = 0
+    - duplicate_count(node_node_id) = 0
+    - missing_count(node_type) = 0
+    - missing_count(node_label) = 0
+  drift_checks: []
+lineage:
+  upstream: []
+  downstream: []

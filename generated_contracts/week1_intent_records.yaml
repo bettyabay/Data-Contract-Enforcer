@@ -1,0 +1,94 @@
+apiVersion: v3.0.0
+kind: DataContract
+id: week1_intent_records
+info:
+  title: Week 1 Intent Correlator — Intent Records
+  version: 1.0.0
+  owner: week1-team
+  description: One record per user query. Each record contains the classified intent
+    and all code references found.
+servers:
+  local:
+    type: local
+    path: outputs/week1/intent_records.jsonl
+    format: jsonl
+terms:
+  usage: Internal inter-system data contract. Do not publish.
+  limitations: confidence must remain in 0.0-1.0 float range.
+source:
+  path: outputs/week1/intent_records.jsonl
+  sha256: f889e2e186c2bef2c6566516408980d2b7521a65acc7e9936584690ba8ba0c07
+  record_count: 15
+  generated_at: '2026-04-01T10:28:28.190003Z'
+schema:
+  type: object
+  properties:
+    intent_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    description:
+      type: string
+      required: true
+    created_at:
+      type: string
+      required: true
+      format: date-time
+    ref_file:
+      type: string
+      required: true
+    ref_line_start:
+      type: integer
+      required: true
+      minimum: 7.0
+      maximum: 197.0
+    ref_line_end:
+      type: integer
+      required: true
+      minimum: 18.0
+      maximum: 243.0
+    ref_symbol:
+      type: string
+      required: true
+    ref_confidence:
+      type: number
+      required: true
+      minimum: 0.0
+      maximum: 1.0
+      description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+        to 0-100 percentage scale.
+quality:
+  type: SodaChecks
+  specification:
+    checks for week1_intent_records:
+    - row_count >= 1
+    - missing_count(intent_id) = 0
+    - duplicate_count(intent_id) = 0
+    - missing_count(description) = 0
+    - missing_count(created_at) = 0
+    - 'invalid_count(created_at) = 0  # format: date-time'
+    - missing_count(ref_file) = 0
+    - missing_count(ref_line_start) = 0
+    - missing_count(ref_line_end) = 0
+    - missing_count(ref_symbol) = 0
+    - missing_count(ref_confidence) = 0
+    - min(ref_confidence) >= 0.0
+    - max(ref_confidence) <= 1.0
+  drift_checks:
+  - type: statistical_drift
+    field: ref_line_start
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: ref_line_end
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: ref_confidence
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+lineage:
+  upstream: []
+  downstream: []

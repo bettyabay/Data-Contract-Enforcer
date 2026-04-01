@@ -1,0 +1,29 @@
+{
+  "contract_id": "week5_events",
+  "contract_version": "unknown",
+  "data_path": "outputs/week5/events.jsonl",
+  "record_count": 80,
+  "validated_at": "2026-04-01T11:15:29.047936Z",
+  "overall_status": "FAIL",
+  "violation_count": 1,
+  "violations": [
+    {
+      "status": "FAIL",
+      "check": "uuid_pattern",
+      "field": "metadata_user_id",
+      "reason": "80 value(s) in sample do not match UUID pattern.",
+      "sample": [
+        "user_5",
+        "user_5",
+        "user_4",
+        "user_2",
+        "user_3"
+      ]
+    }
+  ],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 1,
+    "WARN": 0
+  }
+}

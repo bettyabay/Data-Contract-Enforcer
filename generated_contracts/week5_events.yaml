@@ -1,0 +1,154 @@
+apiVersion: v3.0.0
+kind: DataContract
+id: week5_events
+info:
+  title: Week 5 Event Sourcing Platform — Events
+  version: 1.0.0
+  owner: week5-team
+  description: One record per system event. Events are immutable, ordered by sequence_number,
+    and carry a typed payload.
+servers:
+  local:
+    type: local
+    path: outputs/week5/events.jsonl
+    format: jsonl
+terms:
+  usage: Internal inter-system data contract. Do not publish.
+  limitations: See schema constraints for field-level limitations.
+source:
+  path: outputs/week5/events.jsonl
+  sha256: e91a87e117833e439f1f25969f2cfd2bbc0ca5f26c7e80de0614c70b8861317f
+  record_count: 80
+  generated_at: '2026-04-01T10:28:49.604862Z'
+schema:
+  type: object
+  properties:
+    event_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    event_type:
+      type: string
+      required: true
+    aggregate_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    aggregate_type:
+      type: string
+      required: true
+    sequence_number:
+      type: integer
+      required: true
+      minimum: 1.0
+      maximum: 61.0
+    payload_status:
+      type: string
+      required: true
+      enum:
+      - ok
+    payload_item_count:
+      type: integer
+      required: true
+      minimum: 1.0
+      maximum: 99.0
+    metadata_causation_id:
+      type: string
+      required: false
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    metadata_correlation_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    metadata_user_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+      enum:
+      - user_1
+      - user_2
+      - user_3
+      - user_4
+      - user_5
+    metadata_source_service:
+      type: string
+      required: true
+      enum:
+      - week1-intent-correlator
+      - week2-digital-courtroom
+      - week3-document-refinery
+      - week4-brownfield-cartographer
+    schema_version:
+      type: string
+      required: true
+      enum:
+      - '1.0'
+    occurred_at:
+      type: string
+      required: true
+      format: date-time
+    recorded_at:
+      type: string
+      required: true
+      format: date-time
+quality:
+  type: SodaChecks
+  specification:
+    checks for week5_events:
+    - row_count >= 1
+    - missing_count(event_id) = 0
+    - duplicate_count(event_id) = 0
+    - missing_count(event_type) = 0
+    - missing_count(aggregate_id) = 0
+    - duplicate_count(aggregate_id) = 0
+    - missing_count(aggregate_type) = 0
+    - missing_count(sequence_number) = 0
+    - missing_count(payload_status) = 0
+    - missing_count(payload_item_count) = 0
+    - duplicate_count(metadata_causation_id) = 0
+    - missing_count(metadata_correlation_id) = 0
+    - duplicate_count(metadata_correlation_id) = 0
+    - missing_count(metadata_user_id) = 0
+    - duplicate_count(metadata_user_id) = 0
+    - missing_count(metadata_source_service) = 0
+    - missing_count(schema_version) = 0
+    - missing_count(occurred_at) = 0
+    - 'invalid_count(occurred_at) = 0  # format: date-time'
+    - missing_count(recorded_at) = 0
+    - 'invalid_count(recorded_at) = 0  # format: date-time'
+  drift_checks:
+  - type: statistical_drift
+    field: sequence_number
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: payload_item_count
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+lineage:
+  upstream:
+  - id: file::src/event/producer.py
+  - id: file::src/api/routes.py
+  - id: file::src/auth/login.py
+  downstream:
+  - id: file::src/event/producer.py
+    fields_consumed: &id001
+    - event_id
+    - event_type
+    - payload
+    breaking_if_changed: &id002
+    - event_id
+    - sequence_number
+  - id: file::outputs/week5/events.jsonl
+    fields_consumed: *id001
+    breaking_if_changed: *id002

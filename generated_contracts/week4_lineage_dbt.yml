@@ -1,0 +1,56 @@
+version: 2
+models:
+- name: week4_lineage
+  description: One record per lineage snapshot. Each snapshot is a point-in-time graph
+    of nodes and edges representing data dependencies.
+  columns:
+  - name: snapshot_id
+    tests:
+    - not_null
+    - unique
+    - accepted_values:
+        values:
+        - 2dfcd6fb-19c2-41e4-8f02-0df80a67b9d0
+        - c61bd006-fa82-46f5-b8ed-c8d386cda18c
+        - db904171-f460-4b6c-9ca3-204a958c8f8e
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: codebase_root
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - /workspace/data-contract-enforcer
+  - name: git_commit
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - 4f5a3df0340605e10d997d5c9c473c7c7627448c
+        - e2f4461e827ab3df48c5cb2997dbe8ec1f80f4af
+        - f85508aa99e4dc82da66c1adc52c4c0e13411505
+  - name: captured_at
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - '2025-01-15T14:22:00Z'
+        - '2025-01-16T14:23:00Z'
+        - '2025-01-17T14:09:00Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(captured_at as timestamp) is not null
+  - name: node_node_id
+    tests:
+    - not_null
+    - unique
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: node_type
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - FILE
+  - name: node_label
+    tests:
+    - not_null

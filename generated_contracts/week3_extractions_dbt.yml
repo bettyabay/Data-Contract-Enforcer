@@ -1,0 +1,73 @@
+version: 2
+models:
+- name: week3_extractions
+  description: One record per processed document. Each record contains all facts extracted
+    from the source document and the entities referenced.
+  columns:
+  - name: doc_id
+    tests:
+    - not_null
+    - unique
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: source_path
+    tests:
+    - not_null
+  - name: source_hash
+    tests:
+    - not_null
+  - name: extraction_model
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - claude-3-5-sonnet-20241022
+        - claude-3-haiku-20240307
+  - name: processing_time_ms
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1
+        max_value: 4956.0
+  - name: token_count_input
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1
+        max_value: 7781.0
+  - name: token_count_output
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1
+        max_value: 1500.0
+  - name: extracted_at
+    tests:
+    - not_null
+    - dbt_utils.expression_is_true:
+        expression: cast(extracted_at as timestamp) is not null
+  - name: fact_fact_id
+    tests:
+    - not_null
+    - unique
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: fact_text
+    tests:
+    - not_null
+  - name: fact_confidence
+    description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+      to 0-100 percentage scale.
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 1.0
+  - name: fact_page_ref
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1.0
+        max_value: 20.0
+  - name: fact_source_excerpt
+    tests:
+    - not_null

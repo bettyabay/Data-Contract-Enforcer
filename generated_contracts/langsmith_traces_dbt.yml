@@ -1,0 +1,97 @@
+version: 2
+models:
+- name: langsmith_traces
+  description: One record per LangSmith trace run. Covers latency, token usage, error
+    rate, and AI-reported confidence scores.
+  columns:
+  - name: run_id
+    tests:
+    - not_null
+    - unique
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: trace_id
+    tests:
+    - not_null
+    - unique
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: run_type
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - chain
+        - llm
+        - retriever
+        - tool
+  - name: name
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - attribute_violation
+        - extract_facts
+        - generate_contract
+        - validate_schema
+  - name: inputs_prompt
+    tests:
+    - not_null
+  - name: inputs_context
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - '...'
+  - name: outputs_result
+    tests:
+    - not_null
+  - name: outputs_confidence
+    description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+      to 0-100 percentage scale.
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 1.0
+  - name: error
+    tests:
+    - accepted_values:
+        values:
+        - 'TimeoutError: LLM response exceeded 30s'
+  - name: start_time
+    tests:
+    - not_null
+  - name: end_time
+    tests:
+    - not_null
+  - name: latency_ms
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1
+        max_value: 7915.0
+  - name: total_tokens
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1
+        max_value: 5887.0
+  - name: prompt_tokens
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1
+        max_value: 3974.0
+  - name: completion_tokens
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1
+        max_value: 1966.0
+  - name: feedback_score
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 1.0
+  - name: feedback_comment

@@ -1,0 +1,46 @@
+version: 2
+models:
+- name: week1_intent_records
+  description: One record per user query. Each record contains the classified intent
+    and all code references found.
+  columns:
+  - name: intent_id
+    tests:
+    - not_null
+    - unique
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: description
+    tests:
+    - not_null
+  - name: created_at
+    tests:
+    - not_null
+    - dbt_utils.expression_is_true:
+        expression: cast(created_at as timestamp) is not null
+  - name: ref_file
+    tests:
+    - not_null
+  - name: ref_line_start
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 7.0
+        max_value: 197.0
+  - name: ref_line_end
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 18.0
+        max_value: 243.0
+  - name: ref_symbol
+    tests:
+    - not_null
+  - name: ref_confidence
+    description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+      to 0-100 percentage scale.
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 1.0
