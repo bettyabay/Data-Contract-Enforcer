@@ -1,0 +1,23 @@
+{
+  "report_id": "dfbbb93a-3945-4a0d-a450-79cb42d8b731",
+  "contract_id": "week1_intent_records",
+  "contract_version": "1.0.0",
+  "snapshot_id": "0c3a6858dcb702e85d58c63f0b1545835ab93c9330d7cf97b583400140c9cd05",
+  "run_timestamp": "2026-04-02T14:44:41.624809Z",
+  "data_path": "outputs/week1/intent_records.jsonl",
+  "record_count": 18,
+  "total_checks": 0,
+  "passed": 0,
+  "failed": 0,
+  "warned": 0,
+  "errored": 0,
+  "overall_status": "PASS",
+  "violation_count": 0,
+  "results": [],
+  "violations": [],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 0,
+    "WARN": 0
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "written_at": "2026-04-02T14:44:54.714174Z",
+  "columns": {
+    "total_tokens": {
+      "mean": 5366.0,
+      "stddev": 127.69667449846179
+    },
+    "prompt_tokens": {
+      "mean": 4381.5,
+      "stddev": 115.31497028955675
+    },
+    "completion_tokens": {
+      "mean": 984.5,
+      "stddev": 59.99929378115453
+    },
+    "total_cost": {
+      "mean": 0.016098333333333336,
+      "stddev": 0.00037844089911674955
+    }
+  }
+}

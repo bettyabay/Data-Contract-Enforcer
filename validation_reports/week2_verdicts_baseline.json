@@ -1,0 +1,23 @@
+{
+  "report_id": "1e6b1d25-d4b0-4513-ba6a-c6ce52c2646f",
+  "contract_id": "week2_verdicts",
+  "contract_version": "1.0.0",
+  "snapshot_id": "43c30ff53bec2fbd7cccaaa4065acf6fdee9b9ccce3db21bdddffb5dfb4435a4",
+  "run_timestamp": "2026-04-02T14:44:44.749805Z",
+  "data_path": "outputs/week2/verdicts.jsonl",
+  "record_count": 20,
+  "total_checks": 0,
+  "passed": 0,
+  "failed": 0,
+  "warned": 0,
+  "errored": 0,
+  "overall_status": "PASS",
+  "violation_count": 0,
+  "results": [],
+  "violations": [],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 0,
+    "WARN": 0
+  }
+}

@@ -237,11 +237,16 @@ def column_to_clause(profile: dict) -> dict:
         clause["minimum"] = round(stats["min"], 6)
         clause["maximum"] = round(stats["max"], 6)
 
-    # UUID fields
-    if col.endswith("_id"):
-        clause["format"] = "uuid"
-        clause["pattern"] = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-        clause["unique"] = True
+    # UUID fields — only tag as uuid when sample values actually match UUID format
+    _UUID_RE = re.compile(
+        r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    )
+    if col.endswith("_id") and json_type == "string":
+        samples = [v for v in profile.get("sample_values", []) if isinstance(v, str)]
+        if samples and all(_UUID_RE.match(v) for v in samples):
+            clause["format"] = "uuid"
+            clause["pattern"] = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            clause["unique"] = True
 
     # Date-time fields
     if col.endswith("_at"):

@@ -1,0 +1,96 @@
+apiVersion: v3.0.0
+kind: DataContract
+id: week2_verdicts
+info:
+  title: Week2 Verdicts
+  version: 1.0.0
+  owner: unknown
+  description: Auto-generated contract for week2_verdicts.
+servers:
+  local:
+    type: local
+    path: outputs/week2/verdicts.jsonl
+    format: jsonl
+terms:
+  usage: Internal inter-system data contract. Do not publish.
+  limitations: confidence must remain in 0.0-1.0 float range.
+source:
+  path: outputs/week2/verdicts.jsonl
+  sha256: 43c30ff53bec2fbd7cccaaa4065acf6fdee9b9ccce3db21bdddffb5dfb4435a4
+  record_count: 20
+  generated_at: '2026-04-02T14:43:51.445903Z'
+schema:
+  type: object
+  properties:
+    verdict_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    target_ref:
+      type: string
+      required: true
+    rubric_id:
+      type: string
+      required: true
+      enum:
+      - 18b302f9b249bfc33a46fae10a855d91dc9ab1af3d77fb56c0de9092147244f6
+    rubric_version:
+      type: string
+      required: true
+      enum:
+      - 1.2.0
+    overall_verdict:
+      type: string
+      required: true
+      enum:
+      - FAIL
+      - PASS
+      - WARN
+    overall_score:
+      type: number
+      required: true
+      minimum: 1.4
+      maximum: 4.0
+    confidence:
+      type: number
+      required: true
+      minimum: 0.0
+      maximum: 1.0
+      description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+        to 0-100 percentage scale.
+    evaluated_at:
+      type: string
+      required: true
+      format: date-time
+quality:
+  type: SodaChecks
+  specification:
+    checks for week2_verdicts:
+    - row_count >= 1
+    - missing_count(verdict_id) = 0
+    - duplicate_count(verdict_id) = 0
+    - missing_count(target_ref) = 0
+    - missing_count(rubric_id) = 0
+    - duplicate_count(rubric_id) = 0
+    - missing_count(rubric_version) = 0
+    - missing_count(overall_verdict) = 0
+    - missing_count(overall_score) = 0
+    - missing_count(confidence) = 0
+    - min(confidence) >= 0.0
+    - max(confidence) <= 1.0
+    - missing_count(evaluated_at) = 0
+    - 'invalid_count(evaluated_at) = 0  # format: date-time'
+  drift_checks:
+  - type: statistical_drift
+    field: overall_score
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+  - type: statistical_drift
+    field: confidence
+    z_score_warn: 2.0
+    z_score_fail: 3.0
+lineage:
+  upstream: []
+  downstream: []

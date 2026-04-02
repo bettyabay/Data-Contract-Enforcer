@@ -25,14 +25,14 @@ models:
     tests:
     - not_null
     - dbt_expectations.expect_column_values_to_be_between:
-        min_value: 7.0
-        max_value: 197.0
+        min_value: 1.0
+        max_value: 294.0
   - name: ref_line_end
     tests:
     - not_null
     - dbt_expectations.expect_column_values_to_be_between:
-        min_value: 18.0
-        max_value: 243.0
+        min_value: 4.0
+        max_value: 340.0
   - name: ref_symbol
     tests:
     - not_null

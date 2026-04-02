@@ -1,0 +1,69 @@
+{
+  "written_at": "2026-04-02T14:44:52.487320Z",
+  "columns": {
+    "sequence_number": {
+      "mean": 3.816666666666667,
+      "stddev": 3.2806141770301296
+    },
+    "payload_context_token_count": {
+      "mean": 1254.6666666666667,
+      "stddev": 1112.3332833882719
+    },
+    "payload_extraction_duration_ms": {
+      "mean": 1321.0,
+      "stddev": 156.97770542341354
+    },
+    "payload_events_verified_count": {
+      "mean": 6.333333333333333,
+      "stddev": 4.163331998932266
+    },
+    "payload_validation_duration_ms": {
+      "mean": 160.0,
+      "stddev": 20.0
+    },
+    "payload_node_sequence": {
+      "mean": 3.2666666666666666,
+      "stddev": 1.869555587629877
+    },
+    "payload_llm_tokens_input": {
+      "mean": 3693.3333333333335,
+      "stddev": 1306.1903893894387
+    },
+    "payload_llm_tokens_output": {
+      "mean": 711.6666666666666,
+      "stddev": 352.5029550703559
+    },
+    "payload_llm_cost_usd": {
+      "mean": 0.37107166666666663,
+      "stddev": 0.41103046773728746
+    },
+    "payload_duration_ms": {
+      "mean": 3451.0,
+      "stddev": 7747.345545411022
+    },
+    "payload_tool_duration_ms": {
+      "mean": 1495.5,
+      "stddev": 1592.814385503429
+    },
+    "payload_total_nodes_executed": {
+      "mean": 5.0,
+      "stddev": 2.0
+    },
+    "payload_total_llm_calls": {
+      "mean": 1.0,
+      "stddev": 0.0
+    },
+    "payload_total_tokens_used": {
+      "mean": 2443.3333333333335,
+      "stddev": 1394.716219642309
+    },
+    "payload_total_cost_usd": {
+      "mean": 0.26,
+      "stddev": 0.1609347693943108
+    },
+    "payload_total_duration_ms": {
+      "mean": 41368.333333333336,
+      "stddev": 16745.507108873513
+    }
+  }
+}

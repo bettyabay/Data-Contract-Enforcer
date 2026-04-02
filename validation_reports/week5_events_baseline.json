@@ -1,0 +1,23 @@
+{
+  "report_id": "8084fe04-a5d7-453a-b193-3d618b854fd0",
+  "contract_id": "week5_events",
+  "contract_version": "1.0.0",
+  "snapshot_id": "8c0b92477fc4e10fa6097bf6c0e38d3023a5d8f5551266083927c1799791ab01",
+  "run_timestamp": "2026-04-02T14:44:52.488295Z",
+  "data_path": "outputs/week5/events.jsonl",
+  "record_count": 60,
+  "total_checks": 0,
+  "passed": 0,
+  "failed": 0,
+  "warned": 0,
+  "errored": 0,
+  "overall_status": "PASS",
+  "violation_count": 0,
+  "results": [],
+  "violations": [],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 0,
+    "WARN": 0
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "report_id": "06d6ba77-d8f3-4a80-a77b-c5c7974a8928",
+  "contract_id": "week4_lineage",
+  "contract_version": "1.0.0",
+  "snapshot_id": "a49d6efcab9dd1d1af528ecb0857c1f453f4e8cd1c9c9161e7abb92f548b7902",
+  "run_timestamp": "2026-04-02T14:44:49.011814Z",
+  "data_path": "outputs/week4/lineage_snapshots.jsonl",
+  "record_count": 5,
+  "total_checks": 0,
+  "passed": 0,
+  "failed": 0,
+  "warned": 0,
+  "errored": 0,
+  "overall_status": "PASS",
+  "violation_count": 0,
+  "results": [],
+  "violations": [],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 0,
+    "WARN": 0
+  }
+}

@@ -26,20 +26,60 @@ models:
     tests:
     - not_null
     - dbt_expectations.expect_column_values_to_be_between:
-        min_value: 1.0
-        max_value: 61.0
-  - name: payload_status
+        min_value: 0.0
+        max_value: 12.0
+  - name: payload_application_id
     tests:
-    - not_null
     - accepted_values:
         values:
-        - ok
-  - name: payload_item_count
+        - APEX-NARR05
+  - name: payload_applicant_id
     tests:
-    - not_null
+    - accepted_values:
+        values:
+        - COMP-068
+  - name: payload_requested_amount_usd
+    tests:
+    - accepted_values:
+        values:
+        - '950000.0'
+  - name: payload_loan_purpose
+    tests:
+    - accepted_values:
+        values:
+        - working_capital
+  - name: payload_loan_term_months
+    tests:
     - dbt_expectations.expect_column_values_to_be_between:
-        min_value: 1.0
-        max_value: 99.0
+        min_value: 36.0
+        max_value: 36.0
+  - name: payload_submission_channel
+    tests:
+    - accepted_values:
+        values:
+        - relationship_manager
+  - name: payload_contact_email
+    tests:
+    - accepted_values:
+        values:
+        - finance@brightmarkretail.com
+  - name: payload_contact_name
+    tests:
+    - accepted_values:
+        values:
+        - Dana Patel
+  - name: payload_submitted_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:00:04.122Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_submitted_at as timestamp) is not null
+  - name: payload_application_reference
+    tests:
+    - accepted_values:
+        values:
+        - APEX-NARR05
   - name: metadata_causation_id
     tests:
     - unique
@@ -49,30 +89,27 @@ models:
     tests:
     - not_null
     - unique
+    - accepted_values:
+        values:
+        - 2d56fb83-ea42-478b-afd9-a7f8fbe10b25
     - dbt_expectations.expect_column_values_to_match_regex:
         regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
   - name: metadata_user_id
     tests:
     - not_null
-    - unique
     - accepted_values:
         values:
-        - user_1
-        - user_2
-        - user_3
-        - user_4
-        - user_5
-    - dbt_expectations.expect_column_values_to_match_regex:
-        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+        - system
   - name: metadata_source_service
     tests:
     - not_null
     - accepted_values:
         values:
-        - week1-intent-correlator
-        - week2-digital-courtroom
+        - ledger-audit-chain
+        - ledger-event-store
+        - ledger-langgraph-agents
+        - ledger-orchestrator
         - week3-document-refinery
-        - week4-brownfield-cartographer
   - name: schema_version
     tests:
     - not_null
@@ -89,3 +126,517 @@ models:
     - not_null
     - dbt_utils.expression_is_true:
         expression: cast(recorded_at as timestamp) is not null
+  - name: payload_deadline
+    tests:
+    - accepted_values:
+        values:
+        - '2026-04-07T08:00:04.122Z'
+  - name: payload_requested_by
+    tests:
+    - accepted_values:
+        values:
+        - document_processing_agent
+        - system
+  - name: payload_document_id
+    tests:
+    - accepted_values:
+        values:
+        - DOC-INC-001
+        - DOC-PROP-001
+  - name: payload_document_type
+    tests:
+    - accepted_values:
+        values:
+        - application_proposal
+        - balance_sheet
+        - income_statement
+  - name: payload_document_format
+    tests:
+    - accepted_values:
+        values:
+        - pdf
+  - name: payload_filename
+    tests:
+    - accepted_values:
+        values:
+        - proposal_narr05.pdf
+  - name: payload_file_path
+    tests:
+    - accepted_values:
+        values:
+        - ./documents/COMP-068/proposal_narr05.pdf
+  - name: payload_file_size_bytes
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 354822.0
+        max_value: 354822.0
+  - name: payload_file_hash
+    tests:
+    - accepted_values:
+        values:
+        - e3fc179dbf7e67f6d8eec9c77e8864d680149f65a4722f0f8a4ce2663f27420e
+  - name: payload_fiscal_year
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 2024.0
+        max_value: 2024.0
+  - name: payload_uploaded_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:02:43.001Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_uploaded_at as timestamp) is not null
+  - name: payload_uploaded_by
+    tests:
+    - accepted_values:
+        values:
+        - rm-usr-12
+  - name: payload_package_id
+    tests:
+    - accepted_values:
+        values:
+        - APEX-NARR05
+  - name: payload_created_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:02:45.100Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_created_at as timestamp) is not null
+  - name: payload_session_id
+    tests:
+    - accepted_values:
+        values:
+        - sess-credit-001
+        - sess-doc-001
+        - sess-fraud-001
+        - sess-orch-001
+  - name: payload_agent_type
+    tests:
+    - accepted_values:
+        values:
+        - credit_analysis
+        - decision_orchestrator
+        - document_processing
+  - name: payload_model_version
+    tests:
+    - accepted_values:
+        values:
+        - claude-3-5-sonnet-20260219
+  - name: payload_context_source
+    tests:
+    - accepted_values:
+        values:
+        - fresh
+  - name: payload_context_token_count
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 2120.0
+  - name: payload_is_supported
+    tests:
+    - accepted_values:
+        values:
+        - 'True'
+  - name: payload_extraction_duration_ms
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1210.0
+        max_value: 1432.0
+  - name: payload_overall_confidence
+    description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+      to 0-100 percentage scale.
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 1.0
+  - name: payload_is_coherent
+    tests:
+    - accepted_values:
+        values:
+        - 'True'
+  - name: payload_reextraction_recommended
+    tests:
+    - accepted_values:
+        values:
+        - 'False'
+  - name: payload_auditor_notes
+    tests:
+    - accepted_values:
+        values:
+        - Statements reconcile and core GAAP totals are complete.
+  - name: payload_requested_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:02:53.133Z'
+        - '2026-03-31T08:03:08.430Z'
+        - '2026-03-31T08:03:10.021Z'
+        - '2026-03-31T08:03:11.470Z'
+        - '2026-03-31T08:03:13.350Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_requested_at as timestamp) is not null
+  - name: payload_priority
+    tests:
+    - accepted_values:
+        values:
+        - NORMAL
+  - name: payload_opened_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:03:03.913Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_opened_at as timestamp) is not null
+  - name: payload_opened_by_session_id
+    tests:
+    - accepted_values:
+        values:
+        - sess-credit-001
+  - name: payload_years_loaded
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 3.0
+        max_value: 3.0
+  - name: payload_trajectory
+    tests:
+    - accepted_values:
+        values:
+        - DECLINING
+  - name: payload_prior_default_detected
+    tests:
+    - accepted_values:
+        values:
+        - 'False'
+  - name: payload_source
+    tests:
+    - accepted_values:
+        values:
+        - applicant_registry
+  - name: payload_analysis_duration_ms
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 2984.0
+        max_value: 2984.0
+  - name: payload_triggered_by_event_id
+    tests:
+    - accepted_values:
+        values:
+        - evt-comp-3503
+        - evt-credit-3494
+        - evt-fraud-3497
+  - name: payload_started_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:03:09.110Z'
+        - '2026-03-31T08:03:10.610Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_started_at as timestamp) is not null
+  - name: payload_fraud_score
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.22
+        max_value: 0.22
+  - name: payload_risk_level
+    tests:
+    - accepted_values:
+        values:
+        - LOW
+  - name: payload_recommendation
+    tests:
+    - accepted_values:
+        values:
+        - CLEAR
+        - DECLINE
+  - name: payload_regulation_set_version
+    tests:
+    - accepted_values:
+        values:
+        - 2026-Q1
+  - name: payload_rule_id
+    tests:
+    - accepted_values:
+        values:
+        - REG-001
+        - REG-002
+        - REG-003
+  - name: payload_rule_name
+    tests:
+    - accepted_values:
+        values:
+        - Bank Secrecy Act Check
+        - Jurisdiction Lending Eligibility
+        - OFAC Sanctions Screening
+  - name: payload_is_hard_block
+    tests:
+    - accepted_values:
+        values:
+        - 'False'
+        - 'True'
+  - name: payload_overall_verdict
+    tests:
+    - accepted_values:
+        values:
+        - CLEAR
+  - name: payload_has_hard_block
+    tests:
+    - accepted_values:
+        values:
+        - 'False'
+  - name: payload_rules_evaluated
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 6.0
+        max_value: 6.0
+  - name: payload_all_analyses_complete
+    tests:
+    - accepted_values:
+        values:
+        - 'True'
+  - name: payload_orchestrator_session_id
+    tests:
+    - accepted_values:
+        values:
+        - sess-orch-001
+  - name: payload_confidence
+    description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+      to 0-100 percentage scale.
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 1.0
+  - name: payload_executive_summary
+    tests:
+    - accepted_values:
+        values:
+        - Credit profile indicates elevated default risk due to declining revenue
+          and leverage pressure. Fraud signals are low and compliance checks are clear.
+          Despite clean controls, repayment resilience appears weak under moderate
+          stress conditions. Recommendation is to decline without additional mitigants.
+  - name: payload_reason
+    tests:
+    - accepted_values:
+        values:
+        - Orchestrator recommendation requires loan officer confirmation.
+  - name: payload_override
+    tests:
+    - accepted_values:
+        values:
+        - 'True'
+  - name: payload_reviewer_id
+    tests:
+    - accepted_values:
+        values:
+        - LO-Sarah-Chen
+  - name: payload_final_decision
+    tests:
+    - accepted_values:
+        values:
+        - APPROVE
+  - name: payload_override_reason
+    tests:
+    - accepted_values:
+        values:
+        - 15-year customer, prior repayment history, collateral offered
+  - name: payload_review_completed_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:06:12.023Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_review_completed_at as timestamp) is not null
+  - name: payload_approved_amount_usd
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 750000.0
+        max_value: 750000.0
+  - name: payload_adverse_action_notice_required
+    tests:
+    - accepted_values:
+        values:
+        - 'False'
+  - name: payload_approved_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:06:12.070Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_approved_at as timestamp) is not null
+  - name: payload_entity_type
+    tests:
+    - accepted_values:
+        values:
+        - credit
+        - docpkg
+        - loan
+  - name: payload_entity_id
+    tests:
+    - accepted_values:
+        values:
+        - APEX-NARR05
+  - name: payload_events_verified_count
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 3.0
+        max_value: 11.0
+  - name: payload_previous_hash
+    tests:
+    - accepted_values:
+        values:
+        - '0000000000000000000000000000000000000000000000000000000000000000'
+        - 45f72fb24eb9d2a5fcf68360dbf2a6bf626fdb53c04f12dcf047f59657f7c2d7
+        - 4f8f0f0ad558f1a4926e9167ec55c7bd74fc72f7b64f7f647d875d05c53ca2f8
+  - name: payload_integrity_hash
+    tests:
+    - accepted_values:
+        values:
+        - 45f72fb24eb9d2a5fcf68360dbf2a6bf626fdb53c04f12dcf047f59657f7c2d7
+        - 4f8f0f0ad558f1a4926e9167ec55c7bd74fc72f7b64f7f647d875d05c53ca2f8
+        - 6c9c7657f4e2b79da25244f0d12ff8d6c6f5585e8c20f843f120763f84f439f4
+  - name: payload_validation_duration_ms
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 140.0
+        max_value: 180.0
+  - name: payload_validated_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:02:54.008000Z'
+        - '2026-03-31T08:03:14.025000Z'
+        - '2026-03-31T08:03:22.005000Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_validated_at as timestamp) is not null
+  - name: payload_node_name
+  - name: payload_node_sequence
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1.0
+        max_value: 7.0
+  - name: payload_llm_called
+    tests:
+    - accepted_values:
+        values:
+        - 'False'
+        - 'True'
+  - name: payload_llm_tokens_input
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 2880.0
+        max_value: 5200.0
+  - name: payload_llm_tokens_output
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 305.0
+        max_value: 930.0
+  - name: payload_llm_cost_usd
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.013215
+        max_value: 0.82
+  - name: payload_duration_ms
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 145.0
+        max_value: 29800.0
+  - name: payload_executed_at
+    tests:
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_executed_at as timestamp) is not null
+  - name: payload_tool_name
+    tests:
+    - accepted_values:
+        values:
+        - event_store_load_stream
+        - query_applicant_registry
+        - week3_extraction_pipeline
+  - name: payload_tool_input_summary
+    tests:
+    - accepted_values:
+        values:
+        - 'PDF extraction: balance_sheet'
+        - 'PDF extraction: income_statement'
+        - company_id=COMP-068, years=[2022,2023,2024]
+        - stream_id=docpkg-APEX-NARR05
+  - name: payload_tool_output_summary
+    tests:
+    - accepted_values:
+        values:
+        - 3yr financials, 1 compliance flag
+        - Extracted 10 financial line items
+        - Extracted 8 financial line items
+        - Loaded current-year FinancialFacts (quality flags present=False)
+  - name: payload_tool_duration_ms
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 110.0
+        max_value: 3177.0
+  - name: payload_called_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:03:31.008000Z'
+        - '2026-03-31T08:03:44.008000Z'
+        - '2026-03-31T08:04:09.025000Z'
+        - '2026-03-31T08:04:27.025000Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_called_at as timestamp) is not null
+  - name: payload_output_summary
+    tests:
+    - accepted_values:
+        values:
+        - 3 documents processed, high confidence. Package ready for credit analysis.
+        - 'Credit complete. Risk: HIGH. Limit: $780,000. Confidence: 82%.'
+        - 'Decision generated. Recommendation: DECLINE (human override applied).'
+  - name: payload_written_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:04:46.008000Z'
+        - '2026-03-31T08:05:32.005000Z'
+        - '2026-03-31T08:05:49.025000Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_written_at as timestamp) is not null
+  - name: payload_total_nodes_executed
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 3.0
+        max_value: 7.0
+  - name: payload_total_llm_calls
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1.0
+        max_value: 1.0
+  - name: payload_total_tokens_used
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1180.0
+        max_value: 3940.0
+  - name: payload_total_cost_usd
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.09
+        max_value: 0.41
+  - name: payload_total_duration_ms
+    tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 23105.0
+        max_value: 56000.0
+  - name: payload_next_agent_triggered
+    tests:
+    - accepted_values:
+        values:
+        - credit_analysis
+        - fraud_detection
+        - human_review
+  - name: payload_completed_at
+    tests:
+    - accepted_values:
+        values:
+        - '2026-03-31T08:05:01.008000Z'
+        - '2026-03-31T08:05:47.005000Z'
+        - '2026-03-31T08:06:06.025000Z'
+    - dbt_utils.expression_is_true:
+        expression: cast(payload_completed_at as timestamp) is not null

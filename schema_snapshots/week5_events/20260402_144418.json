@@ -1,0 +1,810 @@
+{
+  "contract_id": "week5_events",
+  "contract_version": "1.0.0",
+  "snapshot_at": "2026-04-02T14:44:18.333835Z",
+  "source_path": "outputs/week5/events.jsonl",
+  "record_count": 60,
+  "sha256": "8c0b92477fc4e10fa6097bf6c0e38d3023a5d8f5551266083927c1799791ab01",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "event_type": {
+      "type": "string",
+      "required": true
+    },
+    "aggregate_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "aggregate_type": {
+      "type": "string",
+      "required": true
+    },
+    "sequence_number": {
+      "type": "integer",
+      "required": true,
+      "minimum": 0.0,
+      "maximum": 12.0
+    },
+    "payload_application_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "APEX-NARR05"
+      ]
+    },
+    "payload_applicant_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "COMP-068"
+      ]
+    },
+    "payload_requested_amount_usd": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "950000.0"
+      ]
+    },
+    "payload_loan_purpose": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "working_capital"
+      ]
+    },
+    "payload_loan_term_months": {
+      "type": "number",
+      "required": false,
+      "minimum": 36.0,
+      "maximum": 36.0
+    },
+    "payload_submission_channel": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "relationship_manager"
+      ]
+    },
+    "payload_contact_email": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "finance@brightmarkretail.com"
+      ]
+    },
+    "payload_contact_name": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Dana Patel"
+      ]
+    },
+    "payload_submitted_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:00:04.122Z"
+      ]
+    },
+    "payload_application_reference": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "APEX-NARR05"
+      ]
+    },
+    "metadata_causation_id": {
+      "type": "string",
+      "required": false,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "metadata_correlation_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true,
+      "enum": [
+        "2d56fb83-ea42-478b-afd9-a7f8fbe10b25"
+      ]
+    },
+    "metadata_user_id": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "system"
+      ]
+    },
+    "metadata_source_service": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "ledger-audit-chain",
+        "ledger-event-store",
+        "ledger-langgraph-agents",
+        "ledger-orchestrator",
+        "week3-document-refinery"
+      ]
+    },
+    "schema_version": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "1.0"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "required": true,
+      "format": "date-time"
+    },
+    "recorded_at": {
+      "type": "string",
+      "required": true,
+      "format": "date-time"
+    },
+    "payload_deadline": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "2026-04-07T08:00:04.122Z"
+      ]
+    },
+    "payload_requested_by": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "document_processing_agent",
+        "system"
+      ]
+    },
+    "payload_document_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "DOC-INC-001",
+        "DOC-PROP-001"
+      ]
+    },
+    "payload_document_type": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "application_proposal",
+        "balance_sheet",
+        "income_statement"
+      ]
+    },
+    "payload_document_format": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "pdf"
+      ]
+    },
+    "payload_filename": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "proposal_narr05.pdf"
+      ]
+    },
+    "payload_file_path": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "./documents/COMP-068/proposal_narr05.pdf"
+      ]
+    },
+    "payload_file_size_bytes": {
+      "type": "number",
+      "required": false,
+      "minimum": 354822.0,
+      "maximum": 354822.0
+    },
+    "payload_file_hash": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "e3fc179dbf7e67f6d8eec9c77e8864d680149f65a4722f0f8a4ce2663f27420e"
+      ]
+    },
+    "payload_fiscal_year": {
+      "type": "number",
+      "required": false,
+      "minimum": 2024.0,
+      "maximum": 2024.0
+    },
+    "payload_uploaded_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:02:43.001Z"
+      ]
+    },
+    "payload_uploaded_by": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "rm-usr-12"
+      ]
+    },
+    "payload_package_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "APEX-NARR05"
+      ]
+    },
+    "payload_created_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:02:45.100Z"
+      ]
+    },
+    "payload_session_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "sess-credit-001",
+        "sess-doc-001",
+        "sess-fraud-001",
+        "sess-orch-001"
+      ]
+    },
+    "payload_agent_type": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "credit_analysis",
+        "decision_orchestrator",
+        "document_processing"
+      ]
+    },
+    "payload_model_version": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "claude-3-5-sonnet-20260219"
+      ]
+    },
+    "payload_context_source": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "fresh"
+      ]
+    },
+    "payload_context_token_count": {
+      "type": "number",
+      "required": false,
+      "minimum": 0.0,
+      "maximum": 2120.0
+    },
+    "payload_is_supported": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "True"
+      ]
+    },
+    "payload_extraction_duration_ms": {
+      "type": "number",
+      "required": false,
+      "minimum": 1210.0,
+      "maximum": 1432.0
+    },
+    "payload_overall_confidence": {
+      "type": "number",
+      "required": false,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed to 0-100 percentage scale."
+    },
+    "payload_is_coherent": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "True"
+      ]
+    },
+    "payload_reextraction_recommended": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "False"
+      ]
+    },
+    "payload_auditor_notes": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Statements reconcile and core GAAP totals are complete."
+      ]
+    },
+    "payload_requested_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:02:53.133Z",
+        "2026-03-31T08:03:08.430Z",
+        "2026-03-31T08:03:10.021Z",
+        "2026-03-31T08:03:11.470Z",
+        "2026-03-31T08:03:13.350Z"
+      ]
+    },
+    "payload_priority": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "NORMAL"
+      ]
+    },
+    "payload_opened_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:03:03.913Z"
+      ]
+    },
+    "payload_opened_by_session_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "sess-credit-001"
+      ]
+    },
+    "payload_years_loaded": {
+      "type": "number",
+      "required": false,
+      "minimum": 3.0,
+      "maximum": 3.0
+    },
+    "payload_trajectory": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "DECLINING"
+      ]
+    },
+    "payload_prior_default_detected": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "False"
+      ]
+    },
+    "payload_source": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "applicant_registry"
+      ]
+    },
+    "payload_analysis_duration_ms": {
+      "type": "number",
+      "required": false,
+      "minimum": 2984.0,
+      "maximum": 2984.0
+    },
+    "payload_triggered_by_event_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "evt-comp-3503",
+        "evt-credit-3494",
+        "evt-fraud-3497"
+      ]
+    },
+    "payload_started_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:03:09.110Z",
+        "2026-03-31T08:03:10.610Z"
+      ]
+    },
+    "payload_fraud_score": {
+      "type": "number",
+      "required": false,
+      "minimum": 0.22,
+      "maximum": 0.22
+    },
+    "payload_risk_level": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "LOW"
+      ]
+    },
+    "payload_recommendation": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "CLEAR",
+        "DECLINE"
+      ]
+    },
+    "payload_regulation_set_version": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "2026-Q1"
+      ]
+    },
+    "payload_rule_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "REG-001",
+        "REG-002",
+        "REG-003"
+      ]
+    },
+    "payload_rule_name": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Bank Secrecy Act Check",
+        "Jurisdiction Lending Eligibility",
+        "OFAC Sanctions Screening"
+      ]
+    },
+    "payload_is_hard_block": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "False",
+        "True"
+      ]
+    },
+    "payload_overall_verdict": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "CLEAR"
+      ]
+    },
+    "payload_has_hard_block": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "False"
+      ]
+    },
+    "payload_rules_evaluated": {
+      "type": "number",
+      "required": false,
+      "minimum": 6.0,
+      "maximum": 6.0
+    },
+    "payload_all_analyses_complete": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "True"
+      ]
+    },
+    "payload_orchestrator_session_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "sess-orch-001"
+      ]
+    },
+    "payload_confidence": {
+      "type": "number",
+      "required": false,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed to 0-100 percentage scale."
+    },
+    "payload_executive_summary": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Credit profile indicates elevated default risk due to declining revenue and leverage pressure. Fraud signals are low and compliance checks are clear. Despite clean controls, repayment resilience appears weak under moderate stress conditions. Recommendation is to decline without additional mitigants."
+      ]
+    },
+    "payload_reason": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Orchestrator recommendation requires loan officer confirmation."
+      ]
+    },
+    "payload_override": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "True"
+      ]
+    },
+    "payload_reviewer_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "LO-Sarah-Chen"
+      ]
+    },
+    "payload_final_decision": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "APPROVE"
+      ]
+    },
+    "payload_override_reason": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "15-year customer, prior repayment history, collateral offered"
+      ]
+    },
+    "payload_review_completed_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:06:12.023Z"
+      ]
+    },
+    "payload_approved_amount_usd": {
+      "type": "number",
+      "required": false,
+      "minimum": 750000.0,
+      "maximum": 750000.0
+    },
+    "payload_adverse_action_notice_required": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "False"
+      ]
+    },
+    "payload_approved_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:06:12.070Z"
+      ]
+    },
+    "payload_entity_type": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "credit",
+        "docpkg",
+        "loan"
+      ]
+    },
+    "payload_entity_id": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "APEX-NARR05"
+      ]
+    },
+    "payload_events_verified_count": {
+      "type": "number",
+      "required": false,
+      "minimum": 3.0,
+      "maximum": 11.0
+    },
+    "payload_previous_hash": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "45f72fb24eb9d2a5fcf68360dbf2a6bf626fdb53c04f12dcf047f59657f7c2d7",
+        "4f8f0f0ad558f1a4926e9167ec55c7bd74fc72f7b64f7f647d875d05c53ca2f8"
+      ]
+    },
+    "payload_integrity_hash": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "45f72fb24eb9d2a5fcf68360dbf2a6bf626fdb53c04f12dcf047f59657f7c2d7",
+        "4f8f0f0ad558f1a4926e9167ec55c7bd74fc72f7b64f7f647d875d05c53ca2f8",
+        "6c9c7657f4e2b79da25244f0d12ff8d6c6f5585e8c20f843f120763f84f439f4"
+      ]
+    },
+    "payload_validation_duration_ms": {
+      "type": "number",
+      "required": false,
+      "minimum": 140.0,
+      "maximum": 180.0
+    },
+    "payload_validated_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:02:54.008000Z",
+        "2026-03-31T08:03:14.025000Z",
+        "2026-03-31T08:03:22.005000Z"
+      ]
+    },
+    "payload_node_name": {
+      "type": "string",
+      "required": false
+    },
+    "payload_node_sequence": {
+      "type": "number",
+      "required": false,
+      "minimum": 1.0,
+      "maximum": 7.0
+    },
+    "payload_llm_called": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "False",
+        "True"
+      ]
+    },
+    "payload_llm_tokens_input": {
+      "type": "number",
+      "required": false,
+      "minimum": 2880.0,
+      "maximum": 5200.0
+    },
+    "payload_llm_tokens_output": {
+      "type": "number",
+      "required": false,
+      "minimum": 305.0,
+      "maximum": 930.0
+    },
+    "payload_llm_cost_usd": {
+      "type": "number",
+      "required": false,
+      "minimum": 0.013215,
+      "maximum": 0.82
+    },
+    "payload_duration_ms": {
+      "type": "number",
+      "required": false,
+      "minimum": 145.0,
+      "maximum": 29800.0
+    },
+    "payload_executed_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time"
+    },
+    "payload_tool_name": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "event_store_load_stream",
+        "query_applicant_registry",
+        "week3_extraction_pipeline"
+      ]
+    },
+    "payload_tool_input_summary": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "PDF extraction: balance_sheet",
+        "PDF extraction: income_statement",
+        "company_id=COMP-068, years=[2022,2023,2024]",
+        "stream_id=docpkg-APEX-NARR05"
+      ]
+    },
+    "payload_tool_output_summary": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "3yr financials, 1 compliance flag",
+        "Extracted 10 financial line items",
+        "Extracted 8 financial line items",
+        "Loaded current-year FinancialFacts (quality flags present=False)"
+      ]
+    },
+    "payload_tool_duration_ms": {
+      "type": "number",
+      "required": false,
+      "minimum": 110.0,
+      "maximum": 3177.0
+    },
+    "payload_called_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:03:31.008000Z",
+        "2026-03-31T08:03:44.008000Z",
+        "2026-03-31T08:04:09.025000Z",
+        "2026-03-31T08:04:27.025000Z"
+      ]
+    },
+    "payload_output_summary": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "3 documents processed, high confidence. Package ready for credit analysis.",
+        "Credit complete. Risk: HIGH. Limit: $780,000. Confidence: 82%.",
+        "Decision generated. Recommendation: DECLINE (human override applied)."
+      ]
+    },
+    "payload_written_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:04:46.008000Z",
+        "2026-03-31T08:05:32.005000Z",
+        "2026-03-31T08:05:49.025000Z"
+      ]
+    },
+    "payload_total_nodes_executed": {
+      "type": "number",
+      "required": false,
+      "minimum": 3.0,
+      "maximum": 7.0
+    },
+    "payload_total_llm_calls": {
+      "type": "number",
+      "required": false,
+      "minimum": 1.0,
+      "maximum": 1.0
+    },
+    "payload_total_tokens_used": {
+      "type": "number",
+      "required": false,
+      "minimum": 1180.0,
+      "maximum": 3940.0
+    },
+    "payload_total_cost_usd": {
+      "type": "number",
+      "required": false,
+      "minimum": 0.09,
+      "maximum": 0.41
+    },
+    "payload_total_duration_ms": {
+      "type": "number",
+      "required": false,
+      "minimum": 23105.0,
+      "maximum": 56000.0
+    },
+    "payload_next_agent_triggered": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "credit_analysis",
+        "fraud_detection",
+        "human_review"
+      ]
+    },
+    "payload_completed_at": {
+      "type": "string",
+      "required": false,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T08:05:01.008000Z",
+        "2026-03-31T08:05:47.005000Z",
+        "2026-03-31T08:06:06.025000Z"
+      ]
+    }
+  }
+}

@@ -17,9 +17,9 @@ terms:
   limitations: See schema constraints for field-level limitations.
 source:
   path: outputs/week4/lineage_snapshots.jsonl
-  sha256: cd1284692ef3437428f4a7adf49a52f5e05b9a601fc723de26de65e7285d7f93
-  record_count: 3
-  generated_at: '2026-04-01T10:28:48.102526Z'
+  sha256: a49d6efcab9dd1d1af528ecb0857c1f453f4e8cd1c9c9161e7abb92f548b7902
+  record_count: 5
+  generated_at: '2026-04-02T14:43:57.281014Z'
 schema:
   type: object
   properties:
@@ -30,40 +30,40 @@ schema:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
       unique: true
       enum:
-      - 2dfcd6fb-19c2-41e4-8f02-0df80a67b9d0
-      - c61bd006-fa82-46f5-b8ed-c8d386cda18c
-      - db904171-f460-4b6c-9ca3-204a958c8f8e
+      - 123e4567-e89b-42d3-a456-426614174000
+      - 223e4567-e89b-42d3-a456-426614174001
+      - 323e4567-e89b-42d3-a456-426614174002
+      - 423e4567-e89b-42d3-a456-426614174003
+      - 523e4567-e89b-42d3-a456-426614174004
     codebase_root:
       type: string
       required: true
       enum:
-      - /workspace/data-contract-enforcer
+      - C:/Users/SNFD/Desktop/Tenacious Projects/Codebase-Understanding-Agent/repo_cache/jaffle_shop
     git_commit:
       type: string
       required: true
       enum:
-      - 4f5a3df0340605e10d997d5c9c473c7c7627448c
-      - e2f4461e827ab3df48c5cb2997dbe8ec1f80f4af
-      - f85508aa99e4dc82da66c1adc52c4c0e13411505
+      - 7be2c5838dbdeca8e915d4e46db70e910753d7f6
     captured_at:
       type: string
       required: true
       format: date-time
       enum:
-      - '2025-01-15T14:22:00Z'
-      - '2025-01-16T14:23:00Z'
-      - '2025-01-17T14:09:00Z'
+      - '2026-03-31T14:22:12Z'
+      - '2026-03-31T14:22:13Z'
+      - '2026-03-31T14:22:14Z'
+      - '2026-03-31T14:22:15Z'
+      - '2026-03-31T14:22:16Z'
     node_node_id:
       type: string
       required: true
-      format: uuid
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-      unique: true
     node_type:
       type: string
       required: true
       enum:
       - FILE
+      - TABLE
     node_label:
       type: string
       required: true

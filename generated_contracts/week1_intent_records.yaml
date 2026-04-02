@@ -17,9 +17,9 @@ terms:
   limitations: confidence must remain in 0.0-1.0 float range.
 source:
   path: outputs/week1/intent_records.jsonl
-  sha256: f889e2e186c2bef2c6566516408980d2b7521a65acc7e9936584690ba8ba0c07
-  record_count: 15
-  generated_at: '2026-04-01T10:28:28.190003Z'
+  sha256: 0c3a6858dcb702e85d58c63f0b1545835ab93c9330d7cf97b583400140c9cd05
+  record_count: 18
+  generated_at: '2026-04-02T14:43:48.615453Z'
 schema:
   type: object
   properties:
@@ -42,13 +42,13 @@ schema:
     ref_line_start:
       type: integer
       required: true
-      minimum: 7.0
-      maximum: 197.0
+      minimum: 1.0
+      maximum: 294.0
     ref_line_end:
       type: integer
       required: true
-      minimum: 18.0
-      maximum: 243.0
+      minimum: 4.0
+      maximum: 340.0
     ref_symbol:
       type: string
       required: true

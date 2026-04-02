@@ -1,0 +1,53 @@
+version: 2
+models:
+- name: week2_verdicts
+  description: Auto-generated contract for week2_verdicts.
+  columns:
+  - name: verdict_id
+    tests:
+    - not_null
+    - unique
+    - dbt_expectations.expect_column_values_to_match_regex:
+        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+  - name: target_ref
+    tests:
+    - not_null
+  - name: rubric_id
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - 18b302f9b249bfc33a46fae10a855d91dc9ab1af3d77fb56c0de9092147244f6
+  - name: rubric_version
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - 1.2.0
+  - name: overall_verdict
+    tests:
+    - not_null
+    - accepted_values:
+        values:
+        - FAIL
+        - PASS
+        - WARN
+  - name: overall_score
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 1.4
+        max_value: 4.0
+  - name: confidence
+    description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
+      to 0-100 percentage scale.
+    tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0.0
+        max_value: 1.0
+  - name: evaluated_at
+    tests:
+    - not_null
+    - dbt_utils.expression_is_true:
+        expression: cast(evaluated_at as timestamp) is not null

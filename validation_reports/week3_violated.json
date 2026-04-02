@@ -1,9 +1,9 @@
 {
-  "report_id": "44df7e14-f54f-45c9-8ecc-7d7f2419d52e",
+  "report_id": "d24e8bcc-f9dc-4e72-9e7e-6629d657ab2c",
   "contract_id": "week3_extractions",
   "contract_version": "1.0.0",
-  "snapshot_id": "1460c91ada39d42351e0fa044d18cd0b611ec7b97ac4784a940e7c6b72a87a3b",
-  "run_timestamp": "2026-04-01T15:53:45.092192Z",
+  "snapshot_id": "c87b11615bfbcbf16ee0afd15b6b916b528db2b7be5e413315deb2736e783626",
+  "run_timestamp": "2026-04-02T14:45:31.403923Z",
   "data_path": "outputs/week3/extractions_violated.jsonl",
   "record_count": 60,
   "total_checks": 2,
@@ -19,22 +19,22 @@
       "column_name": "fact_confidence",
       "check_type": "range",
       "status": "CRITICAL",
-      "actual_value": "max=99.0, mean=82.1089",
+      "actual_value": "max=98.0, mean=85.2250",
       "expected": "max<=1.0, min>=0.0",
       "severity": "CRITICAL",
-      "records_failing": 202,
-      "message": "Data max (99.0) exceeds contract maximum (1.0). confidence is in 0\u2013100 range, not 0.0\u20131.0. Breaking change detected."
+      "records_failing": 120,
+      "message": "Data max (98.0) exceeds contract maximum (1.0). confidence is in 0\u2013100 range, not 0.0\u20131.0. Breaking change detected."
     },
     {
       "check_id": "week3_extractions.fact_confidence.statistical_drift",
       "column_name": "fact_confidence",
       "check_type": "statistical_drift",
       "status": "FAIL",
-      "actual_value": "mean=82.1089, z_score=824.3",
-      "expected": "z_score<=3.0 (baseline mean=0.8211, stddev=0.0986)",
+      "actual_value": "mean=85.2250, z_score=1213.7",
+      "expected": "z_score<=3.0 (baseline mean=0.8522, stddev=0.0695)",
       "severity": "HIGH",
-      "records_failing": 202,
-      "message": "Mean drifted 824.3 stddev from baseline (baseline=0.8211, current=82.1089)."
+      "records_failing": 120,
+      "message": "Mean drifted 1213.7 stddev from baseline (baseline=0.8522, current=85.2250)."
     }
   ],
   "violations": [
@@ -42,13 +42,13 @@
       "status": "CRITICAL",
       "check": "range",
       "field": "fact_confidence",
-      "reason": "Data max (99.0) exceeds contract maximum (1.0). confidence is in 0\u2013100 range, not 0.0\u20131.0. Breaking change detected."
+      "reason": "Data max (98.0) exceeds contract maximum (1.0). confidence is in 0\u2013100 range, not 0.0\u20131.0. Breaking change detected."
     },
     {
       "status": "FAIL",
       "check": "statistical_drift",
       "field": "fact_confidence",
-      "reason": "Mean drifted 824.3 stddev from baseline (baseline=0.8211, current=82.1089)."
+      "reason": "Mean drifted 1213.7 stddev from baseline (baseline=0.8522, current=85.2250)."
     }
   ],
   "summary": {

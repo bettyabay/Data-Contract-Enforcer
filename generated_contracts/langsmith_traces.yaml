@@ -14,132 +14,97 @@ servers:
     format: jsonl
 terms:
   usage: Internal inter-system data contract. Do not publish.
-  limitations: confidence must remain in 0.0-1.0 float range.
+  limitations: See schema constraints for field-level limitations.
 source:
   path: outputs/traces/runs.jsonl
-  sha256: ff47c6812c1267263f1567af5b7fb3d5dae155f40bb85043e33714a5fb18aa00
+  sha256: eb3cbc8cfc717d4d15fc57ec4e0ab7556442aacd669f444ba0ab5a762326d85d
   record_count: 60
-  generated_at: '2026-04-01T10:28:50.722314Z'
+  generated_at: '2026-04-02T14:44:02.332262Z'
 schema:
   type: object
   properties:
-    run_id:
+    id:
       type: string
       required: true
-      format: uuid
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-      unique: true
-    trace_id:
+    name:
       type: string
       required: true
-      format: uuid
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-      unique: true
+      enum:
+      - AutomatonAuditorGraph
+      - judge_prosecutor
+      - pdf_chunk_retriever
+      - repo_clone_sandbox
+      - report_chunk_embed
     run_type:
       type: string
       required: true
       enum:
       - chain
+      - embedding
       - llm
       - retriever
       - tool
-    name:
-      type: string
-      required: true
-      enum:
-      - attribute_violation
-      - extract_facts
-      - generate_contract
-      - validate_schema
-    inputs_prompt:
-      type: string
-      required: true
-    inputs_context:
-      type: string
-      required: true
-      enum:
-      - '...'
-    outputs_result:
-      type: string
-      required: true
-    outputs_confidence:
-      type: number
-      required: true
-      minimum: 0.0
-      maximum: 1.0
-      description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
-        to 0-100 percentage scale.
     error:
       type: string
       required: false
-      enum:
-      - 'TimeoutError: LLM response exceeded 30s'
     start_time:
       type: string
       required: true
     end_time:
       type: string
       required: true
-    latency_ms:
-      type: integer
-      required: true
-      minimum: 1
-      maximum: 7915.0
     total_tokens:
       type: integer
       required: true
       minimum: 1
-      maximum: 5887.0
+      maximum: 5606.0
     prompt_tokens:
       type: integer
       required: true
       minimum: 1
-      maximum: 3974.0
+      maximum: 4599.0
     completion_tokens:
       type: integer
       required: true
       minimum: 1
-      maximum: 1966.0
-    feedback_score:
+      maximum: 1088.0
+    total_cost:
       type: number
-      required: false
-      minimum: 0.0
-      maximum: 1.0
-    feedback_comment:
+      required: true
+      minimum: 0.0153
+      maximum: 0.0168
+    parent_run_id:
       type: string
       required: false
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+    session_id:
+      type: string
+      required: true
+      format: uuid
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      unique: true
+      enum:
+      - bd9e1b3d-c841-43fb-93b6-ad39b109a974
 quality:
   type: SodaChecks
   specification:
     checks for langsmith_traces:
     - row_count >= 1
-    - missing_count(run_id) = 0
-    - duplicate_count(run_id) = 0
-    - missing_count(trace_id) = 0
-    - duplicate_count(trace_id) = 0
-    - missing_count(run_type) = 0
+    - missing_count(id) = 0
     - missing_count(name) = 0
-    - missing_count(inputs_prompt) = 0
-    - missing_count(inputs_context) = 0
-    - missing_count(outputs_result) = 0
-    - missing_count(outputs_confidence) = 0
-    - min(outputs_confidence) >= 0.0
-    - max(outputs_confidence) <= 1.0
+    - missing_count(run_type) = 0
     - missing_count(start_time) = 0
     - missing_count(end_time) = 0
-    - missing_count(latency_ms) = 0
     - missing_count(total_tokens) = 0
     - missing_count(prompt_tokens) = 0
     - missing_count(completion_tokens) = 0
+    - missing_count(total_cost) = 0
+    - duplicate_count(parent_run_id) = 0
+    - missing_count(session_id) = 0
+    - duplicate_count(session_id) = 0
   drift_checks:
-  - type: statistical_drift
-    field: outputs_confidence
-    z_score_warn: 2.0
-    z_score_fail: 3.0
-  - type: statistical_drift
-    field: latency_ms
-    z_score_warn: 2.0
-    z_score_fail: 3.0
   - type: statistical_drift
     field: total_tokens
     z_score_warn: 2.0
@@ -153,7 +118,7 @@ quality:
     z_score_warn: 2.0
     z_score_fail: 3.0
   - type: statistical_drift
-    field: feedback_score
+    field: total_cost
     z_score_warn: 2.0
     z_score_fail: 3.0
 lineage:

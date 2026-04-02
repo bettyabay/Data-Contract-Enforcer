@@ -1,0 +1,62 @@
+{
+  "contract_id": "week2_verdicts",
+  "contract_version": "1.0.0",
+  "snapshot_at": "2026-04-02T14:44:16.101009Z",
+  "source_path": "outputs/week2/verdicts.jsonl",
+  "record_count": 20,
+  "sha256": "43c30ff53bec2fbd7cccaaa4065acf6fdee9b9ccce3db21bdddffb5dfb4435a4",
+  "properties": {
+    "verdict_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "target_ref": {
+      "type": "string",
+      "required": true
+    },
+    "rubric_id": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "18b302f9b249bfc33a46fae10a855d91dc9ab1af3d77fb56c0de9092147244f6"
+      ]
+    },
+    "rubric_version": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "1.2.0"
+      ]
+    },
+    "overall_verdict": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "FAIL",
+        "PASS",
+        "WARN"
+      ]
+    },
+    "overall_score": {
+      "type": "number",
+      "required": true,
+      "minimum": 1.4,
+      "maximum": 4.0
+    },
+    "confidence": {
+      "type": "number",
+      "required": true,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed to 0-100 percentage scale."
+    },
+    "evaluated_at": {
+      "type": "string",
+      "required": true,
+      "format": "date-time"
+    }
+  }
+}

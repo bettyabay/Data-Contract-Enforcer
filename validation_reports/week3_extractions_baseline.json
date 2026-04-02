@@ -1,0 +1,23 @@
+{
+  "report_id": "bd60018c-d2af-4638-94e0-3dea2c063b07",
+  "contract_id": "week3_extractions",
+  "contract_version": "1.0.0",
+  "snapshot_id": "58439ea297638bb8c29c9c1c7c68be5ebc4542f57cc880604cac43f2787c9c4a",
+  "run_timestamp": "2026-04-02T14:44:46.820393Z",
+  "data_path": "outputs/week3/extractions.jsonl",
+  "record_count": 60,
+  "total_checks": 0,
+  "passed": 0,
+  "failed": 0,
+  "warned": 0,
+  "errored": 0,
+  "overall_status": "PASS",
+  "violation_count": 0,
+  "results": [],
+  "violations": [],
+  "summary": {
+    "CRITICAL": 0,
+    "FAIL": 0,
+    "WARN": 0
+  }
+}

@@ -13,37 +13,49 @@ models:
   - name: source_path
     tests:
     - not_null
+    - accepted_values:
+        values:
+        - C:/Users/Hello/OneDrive/Desktop/Tenacious-Projects/layout-aware-document-intelligence-refinery/data/class_a/CBE_ANNUAL_REPORT_2023-24.pdf
+        - C:/Users/Hello/OneDrive/Desktop/Tenacious-Projects/layout-aware-document-intelligence-refinery/data/class_b/2018_Audited_Financial_Statement_Report.pdf
+        - C:/Users/Hello/OneDrive/Desktop/Tenacious-Projects/layout-aware-document-intelligence-refinery/data/class_b/Annual_Report_JUNE-2023.pdf
   - name: source_hash
     tests:
     - not_null
+    - accepted_values:
+        values:
+        - 018fec7b6054d0fca56e5751f6b4b3b51f45ab08d97abe2494a7ebb272780f4f
+        - 4b51a9c5611db264bdf656e2b82f5a4df3dbb9fc120c0f031e5c7396b9bbb21e
+        - c8c32b40171975a4df7ba4bb4cae73eeb6fd4d752a11e27307599279e7142764
   - name: extraction_model
     tests:
     - not_null
     - accepted_values:
         values:
         - claude-3-5-sonnet-20241022
-        - claude-3-haiku-20240307
   - name: processing_time_ms
     tests:
     - not_null
     - dbt_expectations.expect_column_values_to_be_between:
         min_value: 1
-        max_value: 4956.0
+        max_value: 9460.0
   - name: token_count_input
     tests:
     - not_null
     - dbt_expectations.expect_column_values_to_be_between:
         min_value: 1
-        max_value: 7781.0
+        max_value: 11971.0
   - name: token_count_output
     tests:
     - not_null
     - dbt_expectations.expect_column_values_to_be_between:
         min_value: 1
-        max_value: 1500.0
+        max_value: 1799.0
   - name: extracted_at
     tests:
     - not_null
+    - accepted_values:
+        values:
+        - '2026-04-02T14:20:36Z'
     - dbt_utils.expression_is_true:
         expression: cast(extracted_at as timestamp) is not null
   - name: fact_fact_id
@@ -55,6 +67,13 @@ models:
   - name: fact_text
     tests:
     - not_null
+    - accepted_values:
+        values:
+        - Interest income for the year ended 30 June 2024 was ETB 134,920 million.
+        - Net profit for the year was ETB 34,280 million as of 30 June 2024.
+        - The independent auditor's report covers the financial statements for the
+          year ended 30 June 2023.
+        - Total assets are reported as ETB 48,905 million at 30 June 2023.
   - name: fact_confidence
     description: Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed
       to 0-100 percentage scale.
@@ -65,9 +84,16 @@ models:
         max_value: 1.0
   - name: fact_page_ref
     tests:
+    - not_null
     - dbt_expectations.expect_column_values_to_be_between:
         min_value: 1.0
-        max_value: 20.0
+        max_value: 176.0
   - name: fact_source_excerpt
     tests:
     - not_null
+    - accepted_values:
+        values:
+        - '...for the year ended 30 June 2023...'
+        - Interest income 134,920 (FY ended 30 June 2024)
+        - Net profit for the year 34,280 (30 June 2024)
+        - Total assets 48,905 (30 June 2023)

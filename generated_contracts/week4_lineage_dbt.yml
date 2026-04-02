@@ -10,9 +10,11 @@ models:
     - unique
     - accepted_values:
         values:
-        - 2dfcd6fb-19c2-41e4-8f02-0df80a67b9d0
-        - c61bd006-fa82-46f5-b8ed-c8d386cda18c
-        - db904171-f460-4b6c-9ca3-204a958c8f8e
+        - 123e4567-e89b-42d3-a456-426614174000
+        - 223e4567-e89b-42d3-a456-426614174001
+        - 323e4567-e89b-42d3-a456-426614174002
+        - 423e4567-e89b-42d3-a456-426614174003
+        - 523e4567-e89b-42d3-a456-426614174004
     - dbt_expectations.expect_column_values_to_match_regex:
         regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
   - name: codebase_root
@@ -20,37 +22,35 @@ models:
     - not_null
     - accepted_values:
         values:
-        - /workspace/data-contract-enforcer
+        - C:/Users/SNFD/Desktop/Tenacious Projects/Codebase-Understanding-Agent/repo_cache/jaffle_shop
   - name: git_commit
     tests:
     - not_null
     - accepted_values:
         values:
-        - 4f5a3df0340605e10d997d5c9c473c7c7627448c
-        - e2f4461e827ab3df48c5cb2997dbe8ec1f80f4af
-        - f85508aa99e4dc82da66c1adc52c4c0e13411505
+        - 7be2c5838dbdeca8e915d4e46db70e910753d7f6
   - name: captured_at
     tests:
     - not_null
     - accepted_values:
         values:
-        - '2025-01-15T14:22:00Z'
-        - '2025-01-16T14:23:00Z'
-        - '2025-01-17T14:09:00Z'
+        - '2026-03-31T14:22:12Z'
+        - '2026-03-31T14:22:13Z'
+        - '2026-03-31T14:22:14Z'
+        - '2026-03-31T14:22:15Z'
+        - '2026-03-31T14:22:16Z'
     - dbt_utils.expression_is_true:
         expression: cast(captured_at as timestamp) is not null
   - name: node_node_id
     tests:
     - not_null
-    - unique
-    - dbt_expectations.expect_column_values_to_match_regex:
-        regex: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
   - name: node_type
     tests:
     - not_null
     - accepted_values:
         values:
         - FILE
+        - TABLE
   - name: node_label
     tests:
     - not_null
