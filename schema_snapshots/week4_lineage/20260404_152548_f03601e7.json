@@ -1,0 +1,67 @@
+{
+  "contract_id": "week4_lineage",
+  "snapshot_id": "2c666c7a-1c12-486b-9461-9ee0069c8b41",
+  "captured_at": "2026-04-04T15:25:48.363471Z",
+  "schema_version": "1.0.0",
+  "source_path": "outputs/week4/lineage_snapshots.jsonl",
+  "record_count": 5,
+  "sha256": "a49d6efcab9dd1d1af528ecb0857c1f453f4e8cd1c9c9161e7abb92f548b7902",
+  "properties": {
+    "snapshot_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true,
+      "enum": [
+        "123e4567-e89b-42d3-a456-426614174000",
+        "223e4567-e89b-42d3-a456-426614174001",
+        "323e4567-e89b-42d3-a456-426614174002",
+        "423e4567-e89b-42d3-a456-426614174003",
+        "523e4567-e89b-42d3-a456-426614174004"
+      ]
+    },
+    "codebase_root": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "C:/Users/SNFD/Desktop/Tenacious Projects/Codebase-Understanding-Agent/repo_cache/jaffle_shop"
+      ]
+    },
+    "git_commit": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "7be2c5838dbdeca8e915d4e46db70e910753d7f6"
+      ]
+    },
+    "captured_at": {
+      "type": "string",
+      "required": true,
+      "format": "date-time",
+      "enum": [
+        "2026-03-31T14:22:12Z",
+        "2026-03-31T14:22:13Z",
+        "2026-03-31T14:22:14Z",
+        "2026-03-31T14:22:15Z",
+        "2026-03-31T14:22:16Z"
+      ]
+    },
+    "node_node_id": {
+      "type": "string",
+      "required": true
+    },
+    "node_type": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "FILE",
+        "TABLE"
+      ]
+    },
+    "node_label": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

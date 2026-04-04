@@ -19,7 +19,7 @@ source:
   path: outputs/week5/events.jsonl
   sha256: 8c0b92477fc4e10fa6097bf6c0e38d3023a5d8f5551266083927c1799791ab01
   record_count: 60
-  generated_at: '2026-04-02T14:43:59.935338Z'
+  generated_at: '2026-04-04T15:25:49.754244Z'
 schema:
   type: object
   properties:
@@ -801,4 +801,51 @@ quality:
     z_score_fail: 3.0
 lineage:
   upstream: []
-  downstream: []
+  downstream:
+  - id: week7-enforcer
+    description: 'Registered subscriber via ContractRegistry. Validation mode: ENFORCE.'
+    fields_consumed:
+    - event_id
+    - event_type
+    - aggregate_id
+    - sequence_number
+    - payload
+    - schema_version
+    breaking_if_changed:
+    - event_type
+    - sequence_number
+    - payload
+    validation_mode: ENFORCE
+    contact: week7-team@org.com
+llm_annotations:
+  event_type:
+    description: A categorical field representing the type of event that occurred
+      in the system
+    validation_expression: isinstance(v, str) and v in ['ApplicationSubmitted', 'DocumentUploadRequested',
+      'DocumentUploaded', 'PackageCreated', 'AgentSessionStarted']
+    cross_column_note: Likely correlated with 'aggregate_type' and provides context
+      for 'sequence_number' tracking event progression
+  aggregate_type:
+    description: Classifies the high-level business domain or system entity associated
+      with an event record
+    validation_expression: isinstance(v, str) and v in ['LoanApplication', 'DocumentPackage',
+      'AgentSession', 'CreditRecord', 'FraudScreening']
+    cross_column_note: Should semantically relate to the 'aggregate_id' which would
+      be the specific instance ID for that aggregate type
+  sequence_number:
+    description: A sequential number indicating the order of events within a specific
+      aggregate
+    validation_expression: isinstance(v, (str, int)) and str(v).isdigit() and int(v)
+      >= 0
+    cross_column_note: Typically starts at 0 and increments with each new event in
+      the same aggregate_id, correlating with the aggregate_type
+  payload_requested_amount_usd:
+    description: The USD amount requested in the event payload
+    validation_expression: isinstance(v, (int, float)) and v >= 0
+    cross_column_note: Likely represents a monetary amount related to the specific
+      event type and aggregate
+  payload_loan_purpose:
+    description: Describes the primary purpose or reason for a loan event
+    validation_expression: isinstance(v, str) and v in ['working_capital', 'equipment',
+      'real_estate', 'expansion', 'refinancing']
+    cross_column_note: Should be consistent with 'event_type' related to loan transactions

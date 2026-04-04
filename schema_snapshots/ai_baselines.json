@@ -1,0 +1,17 @@
+{
+  "embedding_centroid": {
+    "centroid": [
+      0.0,
+      1.0732000000000002,
+      0.5,
+      0.0
+    ],
+    "established_at": "2026-04-04T15:47:24.434308Z",
+    "record_count": 60
+  },
+  "output_violation_rate": {
+    "rate": 1.0,
+    "established_at": "2026-04-04T15:47:24.436511Z",
+    "record_count": 60
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "contract_id": "week1_intent_records",
+  "snapshot_id": "a2ce6fd6-1072-4f3e-8899-c166aad39f85",
+  "captured_at": "2026-04-04T15:23:21.775859Z",
+  "schema_version": "1.0.0",
+  "source_path": "outputs/week1/intent_records.jsonl",
+  "record_count": 18,
+  "sha256": "0c3a6858dcb702e85d58c63f0b1545835ab93c9330d7cf97b583400140c9cd05",
+  "properties": {
+    "intent_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "description": {
+      "type": "string",
+      "required": true
+    },
+    "created_at": {
+      "type": "string",
+      "required": true,
+      "format": "date-time"
+    },
+    "ref_file": {
+      "type": "string",
+      "required": true
+    },
+    "ref_line_start": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1.0,
+      "maximum": 294.0
+    },
+    "ref_line_end": {
+      "type": "integer",
+      "required": true,
+      "minimum": 4.0,
+      "maximum": 340.0
+    },
+    "ref_symbol": {
+      "type": "string",
+      "required": true
+    },
+    "ref_confidence": {
+      "type": "number",
+      "required": true,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed to 0-100 percentage scale."
+    }
+  }
+}

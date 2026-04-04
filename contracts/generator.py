@@ -14,6 +14,7 @@ Usage:
 import argparse
 import hashlib
 import json
+import os
 import re
 import uuid
 from datetime import datetime, timezone
@@ -21,6 +22,13 @@ from pathlib import Path
 
 import pandas as pd
 import yaml
+
+# Load .env if python-dotenv is available (silently skip if not installed)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 try:
     from ydata_profiling import ProfileReport
@@ -277,41 +285,85 @@ def column_to_clause(profile: dict) -> dict:
 
 # ── Stage 4: Lineage injection and contract assembly ─────────────────────────
 
-def inject_lineage(contract: dict, lineage_path: str | None, contract_id: str) -> dict:
-    """Inject lineage metadata from the latest lineage snapshot."""
-    if not lineage_path or not Path(lineage_path).exists():
-        contract["lineage"] = {"upstream": [], "downstream": []}
-        return contract
+def inject_lineage(
+    contract: dict,
+    lineage_path: str | None,
+    contract_id: str,
+    registry_path: str | None = None,
+) -> dict:
+    """
+    Inject lineage metadata into the contract.
 
-    with open(lineage_path, encoding="utf-8") as f:
-        lines = [l.strip() for l in f if l.strip()]
-    snapshot = json.loads(lines[-1])
+    Primary source  — ContractRegistry (subscriptions.yaml): authoritative list of
+                      downstream subscribers and which fields they depend on.
+    Enrichment source — Week 4 lineage graph: upstream producers and any additional
+                        consumers not yet registered.
 
-    keyword = contract_id.split("-")[0].split("_")[0]  # e.g. "week3"
-    consumers = [
-        e["target"]
-        for e in snapshot.get("edges", [])
-        if keyword in e.get("source", "") or keyword in e.get("target", "")
-    ]
-    producers = [
-        e["source"]
-        for e in snapshot.get("edges", [])
-        if keyword in e.get("target", "")
-    ]
+    Fallback: if no registry is provided, use the hardcoded field maps as before.
+    """
+    # ── Primary: registry subscribers ────────────────────────────────────────
+    registry_downstream: list[dict] = []
+    if registry_path and Path(registry_path).exists():
+        with open(registry_path, encoding="utf-8") as f:
+            reg_data = yaml.safe_load(f) or {}
+        for sub in reg_data.get("subscriptions", []):
+            if sub.get("contract_id") != contract_id:
+                continue
+            breaking_fields = sub.get("breaking_fields", [])
+            field_names = [
+                bf["field"] if isinstance(bf, dict) else str(bf)
+                for bf in breaking_fields
+            ]
+            registry_downstream.append({
+                "id": sub.get("subscriber_id"),
+                "description": (
+                    f"Registered subscriber via ContractRegistry. "
+                    f"Validation mode: {sub.get('validation_mode', 'AUDIT')}."
+                ),
+                "fields_consumed": sub.get("fields_consumed", []),
+                "breaking_if_changed": field_names,
+                "validation_mode": sub.get("validation_mode"),
+                "contact": sub.get("contact"),
+            })
 
-    breaking = _infer_breaking_fields(contract_id)
-    consumed = _infer_consumed_fields(contract_id)
+    # ── Enrichment: lineage graph for upstream producers ──────────────────────
+    upstream: list[dict] = []
+    if lineage_path and Path(lineage_path).exists():
+        with open(lineage_path, encoding="utf-8") as f:
+            lines = [l.strip() for l in f if l.strip()]
+        if lines:
+            snapshot = json.loads(lines[-1])
+            keyword = contract_id.split("-")[0].split("_")[0]  # e.g. "week3"
+            producers = [
+                e["source"]
+                for e in snapshot.get("edges", [])
+                if keyword in e.get("target", "")
+            ]
+            upstream = [{"id": p} for p in set(producers)]
+
+            # If registry had no subscriptions for this contract, fall back to
+            # hardcoded inference from the lineage graph so the lineage block
+            # is never empty.
+            if not registry_downstream:
+                breaking = _infer_breaking_fields(contract_id)
+                consumed = _infer_consumed_fields(contract_id)
+                consumers = [
+                    e["target"]
+                    for e in snapshot.get("edges", [])
+                    if keyword in e.get("source", "") or keyword in e.get("target", "")
+                ]
+                registry_downstream = [
+                    {
+                        "id": c,
+                        "fields_consumed": consumed,
+                        "breaking_if_changed": breaking,
+                    }
+                    for c in set(consumers)
+                ]
 
     contract["lineage"] = {
-        "upstream": [{"id": p} for p in set(producers)],
-        "downstream": [
-            {
-                "id": c,
-                "fields_consumed": consumed,
-                "breaking_if_changed": breaking,
-            }
-            for c in set(consumers)
-        ],
+        "upstream": upstream,
+        "downstream": registry_downstream,
     }
     return contract
 
@@ -564,7 +616,8 @@ def generate_dbt_schema(contract: dict, out_path: Path) -> None:
 # ── CLI entry point ──────────────────────────────────────────────────────────
 
 def generate(source: str, contract_id: str, lineage: str | None,
-             output_dir: str, annotate: bool = False) -> Path:
+             output_dir: str, annotate: bool = False,
+             registry: str | None = None) -> Path:
     """
     Full pipeline: load → flatten → profile → contract → write YAML + dbt.
     Returns the path to the written contract YAML file.
@@ -616,10 +669,10 @@ def generate(source: str, contract_id: str, lineage: str | None,
     contract = build_contract(records, df, column_profiles, contract_id, source)
 
     # ── Step 3: lineage injection ──
-    contract = inject_lineage(contract, lineage, contract_id)
+    contract = inject_lineage(contract, lineage, contract_id, registry_path=registry)
 
-    # ── Step 4: LLM annotation (optional) ──
-    if annotate:
+    # ── Step 4: LLM annotation (runs when ANTHROPIC_API_KEY is set) ──
+    if annotate or os.environ.get("ANTHROPIC_API_KEY"):
         try:
             contract = _annotate_with_llm(contract, column_profiles, source)
         except Exception as e:
@@ -637,20 +690,36 @@ def generate(source: str, contract_id: str, lineage: str | None,
     generate_dbt_schema(contract, dbt_path)
     print(f"[generator] dbt schema written to {dbt_path}")
 
+    # ── Step 6: Schema snapshot (for SchemaEvolutionAnalyzer) ──
+    try:
+        from contracts.schema_analyzer import write_schema_snapshot
+    except ImportError:
+        from schema_analyzer import write_schema_snapshot  # type: ignore[no-redef]
+    snap_path = write_schema_snapshot(contract)
+    print(f"[generator] Schema snapshot written to {snap_path}")
+
     return out_path
 
 
 def _annotate_with_llm(contract: dict, column_profiles: dict, source_path: str) -> dict:
     """
-    Optional LLM annotation pass. For columns whose business meaning is ambiguous,
-    calls Claude to produce: (a) plain-English description, (b) validation expression,
-    (c) cross-column relationship. Appended as llm_annotations block.
-    Requires ANTHROPIC_API_KEY in environment.
-    """
-    import anthropic
-    import os
+    LLM annotation pass. Calls Claude to produce for each ambiguous column:
+      (a) plain-English description
+      (b) validation expression
+      (c) cross-column relationship note
 
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    Supports two key formats detected automatically from ANTHROPIC_API_KEY:
+      sk-ant-*   — native Anthropic API (anthropic SDK)
+      sk-or-v1-* — OpenRouter API (openai SDK with OpenRouter base URL)
+
+    Annotation is always attempted when ANTHROPIC_API_KEY is set.
+    Results are appended as llm_annotations block in the contract.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        print("[generator] ANTHROPIC_API_KEY not set — skipping LLM annotation.")
+        return contract
+
     properties = contract.get("schema", {}).get("properties", {})
     annotations = {}
 
@@ -669,6 +738,33 @@ def _annotate_with_llm(contract: dict, column_profiles: dict, source_path: str) 
     table_name = contract.get("id", "unknown")
     print(f"[generator] LLM annotating {len(ambiguous)} ambiguous columns...")
 
+    # Detect key type and build a unified call function
+    is_openrouter = api_key.startswith("sk-or-v1-")
+
+    def _call_claude(prompt: str) -> str:
+        """Call Claude via native Anthropic SDK or OpenRouter (openai-compat)."""
+        if is_openrouter:
+            import openai
+            client = openai.OpenAI(
+                api_key=api_key,
+                base_url="https://openrouter.ai/api/v1",
+            )
+            response = client.chat.completions.create(
+                model="anthropic/claude-3-5-haiku",
+                max_tokens=256,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return response.choices[0].message.content or ""
+        else:
+            import anthropic
+            client = anthropic.Anthropic(api_key=api_key)
+            response = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=256,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return response.content[0].text
+
     for col in ambiguous[:5]:  # cap at 5 to control cost
         profile = column_profiles.get(col, {})
         sample = profile.get("sample_values", [])
@@ -679,25 +775,30 @@ def _annotate_with_llm(contract: dict, column_profiles: dict, source_path: str) 
             f"Column name: {col}\n"
             f"Sample values: {sample}\n"
             f"Adjacent columns: {adjacent}\n\n"
-            "Provide a JSON response with three fields:\n"
+            "Respond with ONLY a JSON object (no markdown, no explanation) with exactly three fields:\n"
             "  description: a plain-English one-sentence description of what this column holds\n"
-            "  validation_expression: a Python boolean expression that validates a single value, e.g. 'isinstance(v, str) and len(v) > 0'\n"
+            "  validation_expression: a Python boolean expression that validates a single value, "
+            "e.g. 'isinstance(v, str) and len(v) > 0'\n"
             "  cross_column_note: any relationship with adjacent columns, or null if none\n"
         )
 
-        response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=256,
-            messages=[{"role": "user", "content": prompt}],
-        )
         try:
-            annotation = json.loads(response.content[0].text)
+            text = _call_claude(prompt)
+            # Strip markdown code fences if present
+            text = text.strip()
+            if text.startswith("```"):
+                text = text.split("```")[1]
+                if text.startswith("json"):
+                    text = text[4:]
+            annotation = json.loads(text.strip())
             annotations[col] = annotation
-        except Exception:
-            pass
+            print(f"[generator]   annotated: {col}")
+        except Exception as e:
+            print(f"[generator]   WARNING: annotation failed for '{col}': {e}")
 
     if annotations:
         contract["llm_annotations"] = annotations
+        print(f"[generator] LLM annotations added for {len(annotations)} column(s).")
 
     return contract
 
@@ -707,6 +808,8 @@ def main():
     parser.add_argument("--source", required=True, help="Path to source JSONL file")
     parser.add_argument("--contract-id", required=True, help="Unique contract identifier (use underscores: week3_extractions)")
     parser.add_argument("--lineage", default=None, help="Path to lineage snapshots JSONL")
+    parser.add_argument("--registry", default=None,
+                        help="Path to contract_registry/subscriptions.yaml (primary source for lineage.downstream)")
     parser.add_argument("--output", default="generated_contracts/", help="Output directory")
     parser.add_argument("--annotate", action="store_true", help="Enable LLM annotation for ambiguous columns (requires ANTHROPIC_API_KEY)")
     args = parser.parse_args()
@@ -717,6 +820,7 @@ def main():
         lineage=args.lineage,
         output_dir=args.output,
         annotate=args.annotate,
+        registry=args.registry,
     )
 
 

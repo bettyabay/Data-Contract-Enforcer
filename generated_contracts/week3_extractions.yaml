@@ -10,16 +10,16 @@ info:
 servers:
   local:
     type: local
-    path: outputs/week3/extractions.jsonl
+    path: outputs/week3/extractions_violated.jsonl
     format: jsonl
 terms:
   usage: Internal inter-system data contract. Do not publish.
   limitations: confidence must remain in 0.0-1.0 float range.
 source:
-  path: outputs/week3/extractions.jsonl
-  sha256: 58439ea297638bb8c29c9c1c7c68be5ebc4542f57cc880604cac43f2787c9c4a
+  path: outputs/week3/extractions_violated.jsonl
+  sha256: c87b11615bfbcbf16ee0afd15b6b916b528db2b7be5e413315deb2736e783626
   record_count: 60
-  generated_at: '2026-04-02T14:43:54.653733Z'
+  generated_at: '2026-04-04T15:30:22.497290Z'
 schema:
   type: object
   properties:
@@ -150,4 +150,55 @@ quality:
     z_score_fail: 3.0
 lineage:
   upstream: []
-  downstream: []
+  downstream:
+  - id: week4-cartographer
+    description: 'Registered subscriber via ContractRegistry. Validation mode: ENFORCE.'
+    fields_consumed:
+    - doc_id
+    - extracted_facts
+    - extraction_model
+    breaking_if_changed:
+    - extracted_facts.confidence
+    - doc_id
+    validation_mode: ENFORCE
+    contact: week4-team@org.com
+  - id: week7-enforcer
+    description: 'Registered subscriber via ContractRegistry. Validation mode: AUDIT.'
+    fields_consumed:
+    - doc_id
+    - extracted_facts.confidence
+    breaking_if_changed:
+    - extracted_facts.confidence
+    validation_mode: AUDIT
+    contact: week7-team@org.com
+llm_annotations:
+  source_path:
+    description: Local filesystem absolute path for source PDF document
+    validation_expression: isinstance(v, str) and v.endswith('.pdf') and 'Tenacious-Projects'
+      in v
+    cross_column_note: source_path seems to be used to generate source_hash, which
+      appears to be a deterministic hash of this path
+  source_hash:
+    description: A hash value used to uniquely identify and verify the source document's
+      integrity
+    validation_expression: isinstance(v, str) and len(v) == 64 and all(c in '0123456789abcdef'
+      for c in v)
+    cross_column_note: Likely derived from or related to the 'source_path' column
+      to ensure document uniqueness
+  extraction_model:
+    description: The name of the AI model used to perform the data extraction
+    validation_expression: isinstance(v, str) and 'claude' in v.lower() and len(v)
+      > 0
+    cross_column_note: Should be consistent with 'source_path' and potentially related
+      to 'processing_time_ms'
+  processing_time_ms:
+    description: Time taken to process a document in milliseconds
+    validation_expression: isinstance(v, (str, int)) and float(v) >= 0
+    cross_column_note: Processing time likely correlates with extraction_model or
+      document complexity
+  token_count_input:
+    description: The number of tokens processed in the input text for an extraction
+      task
+    validation_expression: isinstance(v, (str, int)) and int(v) >= 0
+    cross_column_note: Likely correlated with processing_time_ms, as more tokens typically
+      require more computational time

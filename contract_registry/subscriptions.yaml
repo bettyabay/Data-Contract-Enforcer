@@ -1,0 +1,145 @@
+# contract_registry/subscriptions.yaml
+# This file is manually maintained.
+# Every inter-system data dependency must be listed here.
+# A subscription is a consumer's formal declaration of dependency.
+# contract_id must match the id field in the corresponding generated contract YAML.
+
+subscriptions:
+
+  # ── Week 1 → Week 2 ──────────────────────────────────────────────────────────
+  # The Digital Courtroom (Week 2) sets verdict.target_ref to a value taken from
+  # intent_record.code_refs[].file. If that field is renamed or its format changes,
+  # the courtroom cannot resolve which code artefact it evaluated.
+  - contract_id: week1_intent_records
+    subscriber_id: week2-courtroom
+    subscriber_team: week2
+    fields_consumed: [intent_id, code_refs, governance_tags]
+    breaking_fields:
+      - field: code_refs.file
+        reason: verdict.target_ref is set to a code_refs[].file value; renaming or
+          removing this field breaks the link between a verdict and the artefact it scores.
+      - field: code_refs.confidence
+        reason: rubric weighting uses per-ref confidence; a scale change from 0.0–1.0
+          to 0–100 silently inflates all weighted scores.
+      - field: intent_id
+        reason: primary key used to join intent records to verdict records downstream.
+    validation_mode: ENFORCE
+    registered_at: '2025-01-10T09:00:00Z'
+    contact: week2-team@org.com
+
+  # ── Week 2 → Week 7 (AI Contract Extension — LLM output schema validation) ───
+  # The Enforcer's AI Contract Extension validates verdict records as structured
+  # LLM output. overall_verdict is the primary output field; overall_score and
+  # confidence are statistical baselines for drift detection.
+  - contract_id: week2_verdicts
+    subscriber_id: week7-enforcer
+    subscriber_team: week7
+    fields_consumed: [verdict_id, overall_verdict, overall_score, confidence, evaluated_at]
+    breaking_fields:
+      - field: overall_verdict
+        reason: AI extension validates that LLM output is one of {PASS, FAIL, WARN};
+          adding or renaming enum values breaks the output schema conformance check.
+      - field: overall_score
+        reason: statistical drift check uses overall_score as a numeric baseline;
+          a type change from float to string breaks all drift calculations.
+      - field: confidence
+        reason: embedding drift baseline uses confidence; a scale change from 0.0–1.0
+          to 0–100 silently corrupts the cosine distance check.
+    validation_mode: AUDIT
+    registered_at: '2025-01-10T09:00:00Z'
+    contact: week7-team@org.com
+
+  # ── Week 3 → Week 4 ──────────────────────────────────────────────────────────
+  - contract_id: week3_extractions
+    subscriber_id: week4-cartographer
+    subscriber_team: week4
+    fields_consumed: [doc_id, extracted_facts, extraction_model]
+    breaking_fields:
+      - field: extracted_facts.confidence
+        reason: used for node ranking in the lineage graph; a scale change from 0.0–1.0
+          to 0–100 causes all edge weights to overflow, silently corrupting the graph.
+      - field: doc_id
+        reason: primary key for node identity in the lineage graph; a type or format change
+          breaks the node lookup that cartographer uses to link documents to nodes.
+    validation_mode: ENFORCE
+    registered_at: '2025-01-10T09:00:00Z'
+    contact: week4-team@org.com
+
+  # ── Week 4 → Week 7 (ViolationAttributor) ────────────────────────────────────
+  - contract_id: week4_lineage
+    subscriber_id: week7-enforcer
+    subscriber_team: week7
+    fields_consumed: [snapshot_id, nodes, edges, git_commit, captured_at]
+    breaking_fields:
+      - field: nodes
+        reason: ViolationAttributor traverses the nodes list for BFS blast-radius
+          computation; a schema change to node_id format breaks the find_source_node lookup.
+      - field: edges
+        reason: ViolationAttributor builds adjacency maps from edges; a change to
+          source/target fields or relationship enum breaks all BFS traversal.
+      - field: git_commit
+        reason: attributor uses git_commit to anchor git log --since queries;
+          if this field is removed or renamed, all blame chain construction fails.
+    validation_mode: ENFORCE
+    registered_at: '2025-01-10T09:00:00Z'
+    contact: week7-team@org.com
+
+  # ── Week 5 → Week 7 (event schema validation) ────────────────────────────────
+  - contract_id: week5_events
+    subscriber_id: week7-enforcer
+    subscriber_team: week7
+    fields_consumed: [event_id, event_type, aggregate_id, sequence_number, payload, schema_version]
+    breaking_fields:
+      - field: event_type
+        reason: event schema registry resolves the payload JSON Schema by event_type;
+          renaming or removing an event_type silently disables payload validation.
+      - field: sequence_number
+        reason: monotonicity enforcement requires sequence_number to be an integer that
+          increases per aggregate_id; a type change to string breaks the ordering check.
+      - field: payload
+        reason: payload is validated against the event_type-specific JSON Schema;
+          removing or renaming payload breaks all per-event structural checks.
+    validation_mode: ENFORCE
+    registered_at: '2025-01-10T09:00:00Z'
+    contact: week7-team@org.com
+
+  # ── LangSmith traces → Week 7 (AI Contract Extension) ────────────────────────
+  - contract_id: langsmith_traces
+    subscriber_id: week7-enforcer
+    subscriber_team: week7
+    fields_consumed:
+      - run_id
+      - run_type
+      - inputs
+      - outputs
+      - start_time
+      - end_time
+      - total_tokens
+      - prompt_tokens
+      - completion_tokens
+      - total_cost
+    breaking_fields:
+      - field: outputs_confidence
+        reason: AI extension uses outputs_confidence as the embedding drift baseline;
+          a scale change (0.0–1.0 → 0–100) silently corrupts the cosine distance check.
+      - field: run_id
+        reason: primary key for trace identity; used to join drift results back to LangSmith UI.
+      - field: total_tokens
+        reason: token budget enforcement checks total_tokens = prompt_tokens + completion_tokens;
+          a rename breaks this cross-field invariant check.
+    validation_mode: AUDIT
+    registered_at: '2025-01-10T09:00:00Z'
+    contact: week7-team@org.com
+
+  # ── Week 3 → Week 7 (AI Contract Extension — confidence baseline) ─────────────
+  - contract_id: week3_extractions
+    subscriber_id: week7-enforcer
+    subscriber_team: week7
+    fields_consumed: [doc_id, extracted_facts.confidence]
+    breaking_fields:
+      - field: extracted_facts.confidence
+        reason: AI extension uses the confidence distribution as the embedding drift
+          baseline; a scale change from 0.0–1.0 to 0–100 corrupts all subsequent drift scores.
+    validation_mode: AUDIT
+    registered_at: '2025-01-10T09:00:00Z'
+    contact: week7-team@org.com

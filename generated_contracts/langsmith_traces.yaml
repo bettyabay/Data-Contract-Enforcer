@@ -19,7 +19,7 @@ source:
   path: outputs/traces/runs.jsonl
   sha256: eb3cbc8cfc717d4d15fc57ec4e0ab7556442aacd669f444ba0ab5a762326d85d
   record_count: 60
-  generated_at: '2026-04-02T14:44:02.332262Z'
+  generated_at: '2026-04-04T15:26:15.108419Z'
 schema:
   type: object
   properties:
@@ -123,4 +123,57 @@ quality:
     z_score_fail: 3.0
 lineage:
   upstream: []
-  downstream: []
+  downstream:
+  - id: week7-enforcer
+    description: 'Registered subscriber via ContractRegistry. Validation mode: AUDIT.'
+    fields_consumed:
+    - run_id
+    - run_type
+    - inputs
+    - outputs
+    - start_time
+    - end_time
+    - total_tokens
+    - prompt_tokens
+    - completion_tokens
+    - total_cost
+    breaking_if_changed:
+    - outputs_confidence
+    - run_id
+    - total_tokens
+    validation_mode: AUDIT
+    contact: week7-team@org.com
+llm_annotations:
+  id:
+    description: A unique identifier for each trace record, represented as a UUID
+      string
+    validation_expression: isinstance(v, str) and len(v) == 36 and v.count('-') ==
+      4
+    cross_column_note: Likely serves as a primary key for uniquely identifying trace
+      records across other columns
+  name:
+    description: A descriptive name for a specific trace or operation within a system
+      workflow
+    validation_expression: isinstance(v, str) and len(v.strip()) > 0 and len(v) <=
+      100
+    cross_column_note: Often correlates with the 'run_type' to provide context about
+      the specific trace or operation
+  run_type:
+    description: Categorizes the type of operation or component being traced in a
+      LangSmith execution
+    validation_expression: isinstance(v, str) and v in ['chain', 'tool', 'llm', 'retriever',
+      'embedding']
+    cross_column_note: Should align contextually with the 'name' column to provide
+      precise tracing details
+  error:
+    description: A list of error details captured during the trace execution
+    validation_expression: isinstance(v, list)
+    cross_column_note: Likely relates to 'run_type' - errors may be specific to certain
+      run types
+  start_time:
+    description: Timestamp indicating when the trace or operation was initiated, stored
+      in ISO 8601 UTC format
+    validation_expression: isinstance(v, str) and len(v) > 0 and v.endswith('Z') and
+      v.count('T') == 1 and v[0:4].isdigit() and v[5:7].isdigit() and v[8:10].isdigit()
+    cross_column_note: Often used in relation with 'id' to create a unique temporal
+      reference for the trace

@@ -19,7 +19,7 @@ source:
   path: outputs/week4/lineage_snapshots.jsonl
   sha256: a49d6efcab9dd1d1af528ecb0857c1f453f4e8cd1c9c9161e7abb92f548b7902
   record_count: 5
-  generated_at: '2026-04-02T14:43:57.281014Z'
+  generated_at: '2026-04-04T15:25:27.689635Z'
 schema:
   type: object
   properties:
@@ -85,4 +85,44 @@ quality:
   drift_checks: []
 lineage:
   upstream: []
-  downstream: []
+  downstream:
+  - id: week7-enforcer
+    description: 'Registered subscriber via ContractRegistry. Validation mode: ENFORCE.'
+    fields_consumed:
+    - snapshot_id
+    - nodes
+    - edges
+    - git_commit
+    - captured_at
+    breaking_if_changed:
+    - nodes
+    - edges
+    - git_commit
+    validation_mode: ENFORCE
+    contact: week7-team@org.com
+llm_annotations:
+  codebase_root:
+    description: The local filesystem path to the root directory of a software project's
+      source code repository
+    validation_expression: isinstance(v, str) and len(v) > 0 and '/' in v
+    cross_column_note: Likely corresponds to a specific code snapshot referenced by
+      the adjacent 'snapshot_id' and 'git_commit' columns
+  git_commit:
+    description: The unique hash identifier for a specific Git commit in the repository
+    validation_expression: isinstance(v, str) and len(v) == 40 and all(c in '0123456789abcdef'
+      for c in v)
+    cross_column_note: Likely correlated with 'snapshot_id', represents the precise
+      code state at a moment in time
+  node_type:
+    description: Indicates the type of node in a data lineage graph, such as whether
+      the node represents a file or a database table
+    validation_expression: isinstance(v, str) and v in ['FILE', 'TABLE']
+    cross_column_note: Often relates to the specific node_node_id that describes the
+      unique identifier for this node type in a lineage tracking system
+  node_label:
+    description: Identifies the source file or logical node representing a specific
+      transformation or source in the data lineage tracking system
+    validation_expression: isinstance(v, str) and len(v) > 0 and v.endswith(('.sql',
+      '.yml'))
+    cross_column_note: Likely correlates with 'node_node_id' and provides context
+      for the specific transformation or source within the 'codebase_root' and 'git_commit'

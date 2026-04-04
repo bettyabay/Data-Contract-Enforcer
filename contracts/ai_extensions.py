@@ -1,11 +1,21 @@
 """
-AI Contract Extensions — Phase 2
-Three AI-specific contract checks not covered by standard tabular validation:
-  1. Embedding drift    — cosine distance from centroid baseline (threshold 0.15)
-  2. Prompt validation  — input schema enforcement + quarantine
-  3. Output violation rate — LLM output conformance rate (warn at 2%)
+AI Contract Extensions — Phase 4 (enhanced from Phase 2)
+Three AI-specific contract checks not covered by standard tabular validation.
 
-Usage:
+Phase 4 additions (spec-exact implementations):
+  check_embedding_drift(texts, baseline_path, threshold)
+    — real text-embedding-3-small embeddings via OpenAI API, npz centroid storage
+  PROMPT_INPUT_SCHEMA + validate_prompt_inputs(records, schema, quarantine_path)
+    — formal JSON Schema validation, non-conforming records go to quarantine
+  check_output_schema_violation_rate(verdict_records, baseline_rate, warn_threshold)
+    — tracks overall_verdict ∈ {PASS,FAIL,WARN} conformance rate with trend
+
+Phase 2 functions preserved (LangSmith trace checks):
+  check_embedding_drift (pseudo-embedding on trace records)
+  check_prompt_schema   (inputs.prompt / inputs.context validation)
+  check_output_violation_rate (outputs.confidence / outputs.result validation)
+
+Usage (Phase 4):
     python contracts/ai_extensions.py \
         --traces outputs/traces/runs.jsonl \
         --contract generated_contracts/langsmith_traces.yaml \
@@ -411,6 +421,238 @@ def run_ai_checks(
         json.dump(report, f, indent=2)
 
     return report
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Phase 4 AI Extensions — spec-exact implementations
+# ══════════════════════════════════════════════════════════════════════════════
+
+try:
+    import numpy as _np
+    _NUMPY_AVAILABLE = True
+except ImportError:
+    _np = None  # type: ignore
+    _NUMPY_AVAILABLE = False
+
+try:
+    from sentence_transformers import SentenceTransformer as _SentenceTransformer
+    _ST_AVAILABLE = True
+except ImportError:
+    _SentenceTransformer = None  # type: ignore
+    _ST_AVAILABLE = False
+
+try:
+    import jsonschema as _jsonschema
+    _JSONSCHEMA_AVAILABLE = True
+except ImportError:
+    _jsonschema = None  # type: ignore
+    _JSONSCHEMA_AVAILABLE = False
+
+# Cached model instance — loaded once, reused across calls
+_ST_MODEL = None
+
+
+def _get_st_model():
+    """Load sentence-transformers model on first use (cached)."""
+    global _ST_MODEL
+    if _ST_MODEL is None:
+        _ST_MODEL = _SentenceTransformer("all-MiniLM-L6-v2")
+    return _ST_MODEL
+
+
+# ── Phase 4 Extension 1: Embedding Drift (sentence-transformers, no API key) ──
+# NOTE: named check_text_embedding_drift to avoid shadowing the Phase 2
+# check_embedding_drift(records, baselines, results, threshold) used by run_ai_checks.
+
+def embed_sample(texts: list[str], n: int = 200) -> "list[list[float]]":
+    """
+    Embed a random sample of n texts using all-MiniLM-L6-v2 (local, no API key).
+    Model is ~90MB, downloaded automatically on first run via HuggingFace.
+    Returns list of 384-dim embedding vectors.
+    """
+    import random as _random
+    sample = _random.sample(texts, min(n, len(texts)))
+    model = _get_st_model()
+    embeddings = model.encode(sample, convert_to_numpy=True)
+    return embeddings.tolist()
+
+
+def check_text_embedding_drift(
+    texts: list[str],
+    baseline_path: str,
+    threshold: float = 0.15,
+) -> dict:
+    """
+    Cosine distance between current text centroid and stored baseline centroid.
+    Uses sentence-transformers (all-MiniLM-L6-v2) — no API key required.
+    First run stores the baseline and returns status=BASELINE_SET.
+
+    drift = 1 − cosine_similarity(current_centroid, baseline_centroid)
+    Returns {'status', 'drift_score', 'threshold', 'sample_size', 'message'}.
+    """
+    if not _NUMPY_AVAILABLE:
+        return {"status": "SKIP", "drift_score": None, "message": "numpy not installed."}
+    if not _ST_AVAILABLE:
+        return {
+            "status": "SKIP", "drift_score": None,
+            "message": "sentence-transformers not installed. Run: pip install sentence-transformers",
+        }
+    if not texts:
+        return {"status": "SKIP", "drift_score": None, "message": "No texts provided."}
+
+    try:
+        vectors = embed_sample(texts, n=200)
+        current_centroid = _np.mean(_np.array(vectors), axis=0)
+
+        bpath = Path(baseline_path)
+        if not bpath.exists():
+            bpath.parent.mkdir(parents=True, exist_ok=True)
+            _np.savez(str(bpath), centroid=current_centroid)
+            return {
+                "status": "BASELINE_SET",
+                "drift_score": 0.0,
+                "threshold": threshold,
+                "sample_size": len(vectors),
+                "baseline_path": str(bpath),
+                "message": (
+                    f"Baseline centroid stored ({len(vectors)} samples). "
+                    "Re-run after the next data refresh to begin drift detection."
+                ),
+            }
+
+        baseline_centroid = _np.load(str(bpath))["centroid"]
+        cos_sim = float(
+            _np.dot(current_centroid, baseline_centroid)
+            / (_np.linalg.norm(current_centroid) * _np.linalg.norm(baseline_centroid) + 1e-9)
+        )
+        drift = round(1.0 - cos_sim, 4)
+
+        return {
+            "status": "FAIL" if drift > threshold else "PASS",
+            "drift_score": drift,
+            "threshold": threshold,
+            "sample_size": len(vectors),
+            "message": (
+                f"Embedding drift {drift} exceeds threshold {threshold} — "
+                "distribution shift detected. Inspect recent data for domain change."
+                if drift > threshold
+                else f"Embedding drift {drift} within threshold {threshold}."
+            ),
+        }
+    except Exception as exc:
+        return {"status": "ERROR", "drift_score": None, "message": str(exc)}
+
+
+# ── Phase 4 Extension 2: Prompt Input Schema Validation ───────────────────────
+
+PROMPT_INPUT_SCHEMA: dict = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["doc_id", "source_path", "content_preview"],
+    "properties": {
+        "doc_id":          {"type": "string", "minLength": 36, "maxLength": 36},
+        "source_path":     {"type": "string", "minLength": 1},
+        "content_preview": {"type": "string", "maxLength": 8000},
+    },
+    "additionalProperties": False,
+}
+
+
+def validate_prompt_inputs(
+    records: list[dict],
+    schema: dict | None = None,
+    quarantine_path: str = "outputs/quarantine/prompt_input_violations.jsonl",
+) -> dict:
+    """
+    Validate records against PROMPT_INPUT_SCHEMA before they reach the LLM.
+    Non-conforming records go to quarantine_path — never silently dropped.
+    Returns {status, total, valid, quarantined, quarantine_rate, violations}.
+    """
+    if schema is None:
+        schema = PROMPT_INPUT_SCHEMA
+    if not _JSONSCHEMA_AVAILABLE:
+        return {"status": "SKIP", "message": "jsonschema not installed.", "total": len(records)}
+
+    valid_records: list[dict] = []
+    quarantined: list[dict] = []
+    violation_details: list[dict] = []
+
+    for record in records:
+        try:
+            _jsonschema.validate(instance=record, schema=schema)
+            valid_records.append(record)
+        except _jsonschema.ValidationError as e:
+            quarantined.append(record)
+            violation_details.append({
+                "record_id": record.get("doc_id", "unknown"),
+                "validation_error": e.message,
+                "failed_path": list(e.absolute_path) if e.absolute_path else [],
+            })
+
+    if quarantined:
+        Path(quarantine_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(quarantine_path, "a", encoding="utf-8") as qf:
+            for r in quarantined:
+                qf.write(json.dumps(r) + "\n")
+
+    rate = round(len(quarantined) / max(len(records), 1), 4)
+    return {
+        "status": "FAIL" if quarantined else "PASS",
+        "total": len(records),
+        "valid": len(valid_records),
+        "quarantined": len(quarantined),
+        "quarantine_rate": rate,
+        "violations": violation_details[:10],
+        "quarantine_path": quarantine_path if quarantined else None,
+        "message": (
+            f"{len(quarantined)}/{len(records)} records quarantined ({rate:.1%}). "
+            f"See {quarantine_path}."
+            if quarantined
+            else f"All {len(records)} records passed prompt input schema validation."
+        ),
+    }
+
+
+# ── Phase 4 Extension 3: LLM Output Schema Violation Rate ─────────────────────
+
+def check_output_schema_violation_rate(
+    verdict_records: list[dict],
+    baseline_rate: float | None = None,
+    warn_threshold: float = 0.02,
+) -> dict:
+    """
+    Track what fraction of LLM verdict outputs have overall_verdict ∉ {PASS,FAIL,WARN}.
+    A rising rate signals prompt degradation or model behaviour change.
+    Returns {total_outputs, schema_violations, violation_rate, trend, status}.
+    """
+    total = len(verdict_records)
+    violations = sum(
+        1 for v in verdict_records
+        if v.get("overall_verdict") not in ("PASS", "FAIL", "WARN")
+    )
+    rate = round(violations / max(total, 1), 4)
+
+    trend = "unknown"
+    if baseline_rate is not None:
+        trend = "rising" if rate > baseline_rate * 1.5 else (
+            "falling" if rate < baseline_rate * 0.5 else "stable"
+        )
+
+    return {
+        "total_outputs": total,
+        "schema_violations": violations,
+        "violation_rate": rate,
+        "baseline_rate": baseline_rate,
+        "warn_threshold": warn_threshold,
+        "trend": trend,
+        "status": "WARN" if rate > warn_threshold else "PASS",
+        "message": (
+            f"Violation rate {rate:.2%} exceeds warn threshold {warn_threshold:.2%} "
+            f"(trend: {trend}). Check prompt version and model rollout."
+            if rate > warn_threshold
+            else f"Violation rate {rate:.2%} within bounds (trend: {trend})."
+        ),
+    }
 
 
 # ── CLI entry point ───────────────────────────────────────────────────────────

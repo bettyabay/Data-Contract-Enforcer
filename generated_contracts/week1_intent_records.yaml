@@ -19,7 +19,7 @@ source:
   path: outputs/week1/intent_records.jsonl
   sha256: 0c3a6858dcb702e85d58c63f0b1545835ab93c9330d7cf97b583400140c9cd05
   record_count: 18
-  generated_at: '2026-04-02T14:43:48.615453Z'
+  generated_at: '2026-04-04T15:22:55.491467Z'
 schema:
   type: object
   properties:
@@ -91,4 +91,46 @@ quality:
     z_score_fail: 3.0
 lineage:
   upstream: []
-  downstream: []
+  downstream:
+  - id: week2-courtroom
+    description: 'Registered subscriber via ContractRegistry. Validation mode: ENFORCE.'
+    fields_consumed:
+    - intent_id
+    - code_refs
+    - governance_tags
+    breaking_if_changed:
+    - code_refs.file
+    - code_refs.confidence
+    - intent_id
+    validation_mode: ENFORCE
+    contact: week2-team@org.com
+llm_annotations:
+  description:
+    description: A textual description providing context or explanation for an intent
+      record
+    validation_expression: isinstance(v, str) and 10 < len(v) < 500
+    cross_column_note: Likely elaborates on the purpose or technical details referenced
+      by the intent_id
+  ref_file:
+    description: File path or name related to the intent record's source code or documentation
+    validation_expression: isinstance(v, str) and len(v) > 0 and '/' in v
+    cross_column_note: Typically corresponds with ref_line_start to pinpoint exact
+      code location
+  ref_line_start:
+    description: A numeric identifier representing the starting line number in a reference
+      document or file
+    validation_expression: isinstance(v, (str, int)) and str(v).isdigit() and int(v)
+      > 0
+    cross_column_note: Likely related to 'ref_file' as a line number within a specific
+      referenced file
+  ref_line_end:
+    description: The line ending position in a reference file
+    validation_expression: isinstance(v, (int, str)) and int(v) > 0
+    cross_column_note: Typically used in conjunction with ref_line_start to define
+      a specific line range in a reference file
+  ref_symbol:
+    description: A symbol or method reference name indicating the specific code context
+      or function related to the intent record
+    validation_expression: isinstance(v, str) and len(v) > 0 and v.replace('_', '').isalnum()
+    cross_column_note: Often correlates with ref_file and ref_line_start to provide
+      precise code location context

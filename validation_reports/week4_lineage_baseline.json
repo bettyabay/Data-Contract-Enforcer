@@ -1,13 +1,14 @@
 {
-  "report_id": "06d6ba77-d8f3-4a80-a77b-c5c7974a8928",
+  "report_id": "94a7b98d-56d1-429a-94b5-0a9c8ddce30c",
   "contract_id": "week4_lineage",
   "contract_version": "1.0.0",
   "snapshot_id": "a49d6efcab9dd1d1af528ecb0857c1f453f4e8cd1c9c9161e7abb92f548b7902",
-  "run_timestamp": "2026-04-02T14:44:49.011814Z",
+  "run_timestamp": "2026-04-04T15:27:17.924215Z",
   "data_path": "outputs/week4/lineage_snapshots.jsonl",
   "record_count": 5,
-  "total_checks": 0,
-  "passed": 0,
+  "enforcement_mode": "AUDIT",
+  "total_checks": 14,
+  "passed": 14,
   "failed": 0,
   "warned": 0,
   "errored": 0,
@@ -16,8 +17,8 @@
   "results": [],
   "violations": [],
   "summary": {
-    "CRITICAL": 0,
     "FAIL": 0,
-    "WARN": 0
+    "WARN": 0,
+    "ERROR": 0
   }
 }

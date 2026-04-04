@@ -230,14 +230,18 @@ as `99.0 > 1.0 = True`. The violation emitted:
 
 ```json
 {
-  "status": "CRITICAL",
+  "status": "FAIL",
+  "severity": "CRITICAL",
   "check": "range",
   "field": "fact_confidence",
   "reason": "Data max (99.0) exceeds contract maximum (1.0)."
 }
 ```
 
-Because `CRITICAL` is in the statuses set, `overall_status` is `"FAIL"`.
+`status` is always `FAIL/WARN/ERROR` — it describes the check outcome. `severity` is
+`CRITICAL` for structural and range violations, `HIGH` for statistical drift > 3 σ, and
+`MEDIUM` for drift warnings. Because `"FAIL"` is in the statuses set, `overall_status`
+is `"FAIL"`.
 
 ---
 
@@ -245,28 +249,49 @@ Because `CRITICAL` is in the statuses set, `overall_status` is `"FAIL"`.
 
 ### Step-by-step blame chain process
 
+The attribution pipeline runs in four steps. The ContractRegistry is the **primary**
+blast radius source. The lineage graph is the **enrichment** source. This distinction
+matters: the registry is authoritative for *who declared a dependency*; the lineage
+graph adds *how deep the contamination propagates*.
+
 **Step 1 — Violation is detected.**
 
 The ValidationRunner emits a violation:
 ```json
-{"status": "CRITICAL", "check": "range", "field": "fact_confidence",
+{"status": "FAIL", "severity": "CRITICAL", "check": "range",
+ "field": "fact_confidence",
  "reason": "Data max (99.0) exceeds contract maximum (1.0)."}
 ```
 
-**Step 2 — Identify the violated data source.**
+**Step 2 — Registry blast radius query (primary).**
 
-The contract file (`week3-document-refinery-extractions.yaml`) contains:
-```yaml
-source:
-  path: outputs/week3/extractions.jsonl
+`attributor.py` loads `contract_registry/subscriptions.yaml` and queries for every
+subscription where:
+- `contract_id == "week3_extractions"` AND
+- `breaking_fields[]` contains a field that matches `"fact_confidence"` (full or
+  prefix match, e.g. `extracted_facts.confidence` matches because the failing field
+  `fact_confidence` is the flattened form of the same nested field).
+
+From `subscriptions.yaml`, two subscribers match:
+```
+  subscriber_id: week4-cartographer  (validation_mode: ENFORCE)
+  subscriber_id: week7-enforcer      (validation_mode: AUDIT)
 ```
 
-This is the start node for graph traversal: `"file::outputs/week3/extractions.jsonl"`.
+These are the **authoritative** affected parties. No graph traversal is needed to
+find them — they self-registered their dependency.
 
-**Step 3 — Load the lineage graph.**
+**Step 3 — Identify the violated data source.**
 
-Read the final snapshot from `outputs/week4/lineage_snapshots.jsonl` (last line =
-most recent). The snapshot contains `nodes[]` and `edges[]`. From snapshot 1:
+The contract's `servers.local.path` is `outputs/week3/extractions.jsonl`. This is
+matched against the lineage graph node IDs to find the start node:
+`"file::outputs/week3/extractions.jsonl"`.
+
+**Step 4 — Lineage BFS enrichment (contamination depth).**
+
+Load the final snapshot from `outputs/week4/lineage_snapshots.jsonl`. Build a forward
+adjacency map from `edges[]`. Run BFS forward from the start node to find transitive
+consumers and measure the maximum contamination depth.
 
 ```
 nodes: [
@@ -274,7 +299,6 @@ nodes: [
   "file::src/api/routes.py",
   "file::src/billing/invoice.py",
   "file::src/document/refinery.py",
-  "file::outputs/week5/events.jsonl",
   ...
 ]
 
@@ -287,69 +311,69 @@ edges: [
 ]
 ```
 
-**Step 4 — Breadth-first search (BFS) outward from the start node.**
-
-A **breadth-first search** visits all immediate neighbours first, then their neighbours,
-and so on — like ripples on water. This gives us blast radius by distance level.
-
+BFS forward from `"file::outputs/week3/extractions.jsonl"`:
 ```
 Queue: ["file::outputs/week3/extractions.jsonl"]
 Visited: {}
 
 --- Level 1: direct consumers ---
 Pop: "file::outputs/week3/extractions.jsonl"
-Find all edges where source == this node:
-  → target: "file::src/api/routes.py"      (AFFECTED — Level 1)
-  → target: "file::src/billing/invoice.py" (AFFECTED — Level 1)
-  → target: "file::src/document/refinery.py" (AFFECTED — Level 1)
-Add all three to queue. Mark as visited.
+  → "file::src/api/routes.py"       (AFFECTED — depth 1)
+  → "file::src/billing/invoice.py"  (AFFECTED — depth 1)
+  → "file::src/document/refinery.py"(AFFECTED — depth 1)
 
 --- Level 2: indirect consumers ---
 Pop: "file::src/api/routes.py"
-Find edges where source == "file::src/api/routes.py":
-  → target: "file::src/billing/invoice.py" (already visited — skip)
+  → "file::src/billing/invoice.py" (already visited — skip)
 
-Pop: "file::src/billing/invoice.py"
-Find edges where source == "file::src/billing/invoice.py":
-  → target: "file::src/document/refinery.py" (already visited — skip)
-
-Pop: "file::src/document/refinery.py"
-Find edges — no outgoing edges from this node in snapshot 1.
-
-Queue empty. BFS complete.
+...Queue empty. max contamination_depth = 1.
 ```
 
-**Step 5 — Assemble the blame chain.**
+This enrichment annotates the blast radius with `contamination_depth: 1`, meaning
+all lineage contamination is one hop away. If the registry subscribers are also in the
+lineage graph, the union shows both the declared dependency and the graph evidence.
 
+**Step 5 — Git blame for cause attribution.**
+
+For each upstream node found by BFS backward from the source node, run:
 ```
-CRITICAL violation in: outputs/week3/extractions.jsonl
-  field:  fact_confidence
-  check:  range
-  reason: Data max (99.0) exceeds contract maximum (1.0)
-
-Blast radius (BFS from violated source):
-  Level 1 — direct consumers (3 systems):
-    → file::src/api/routes.py
-    → file::src/billing/invoice.py
-    → file::src/document/refinery.py
-
-  Level 2 — indirect consumers: none new
-
-Total affected nodes: 3
-Severity: CRITICAL × 3 downstream systems
+git log --follow --since="14 days ago" --format="%H|%an|%ae|%ai|%s" -- {file_path}
 ```
 
-**Step 6 — Fields consumed by each affected system.**
+Score each commit: `confidence = 1.0 − (days_since × 0.1) − (lineage_hop × 0.2)`.
+Return the top 5 by confidence.
 
-From the contract's lineage block (`fields_consumed`), the blame chain also reports
-which fields each downstream system reads. For `week3`:
+**Step 6 — Assemble the violation record.**
 
+```json
+{
+  "violation_id": "...",
+  "field": "fact_confidence",
+  "check_type": "range",
+  "blame_chain": [{"rank": 1, "confidence_score": 0.82, ...}],
+  "blast_radius": {
+    "registry_subscribers": [
+      {"subscriber_id": "week4-cartographer", "validation_mode": "ENFORCE"},
+      {"subscriber_id": "week7-enforcer",     "validation_mode": "AUDIT"}
+    ],
+    "affected_nodes": ["file::src/api/routes.py", ...],
+    "affected_pipelines": ["api-routes", ...],
+    "estimated_records": 60,
+    "contamination_depth": 1
+  }
+}
 ```
-fields_consumed by all downstream systems: [doc_id, extracted_facts, entities]
-```
 
-`fact_confidence` is inside `extracted_facts` — so all three downstream systems
-consume the violated field.
+---
+
+### Why registry first, lineage second?
+
+The registry model is **Tier 1–2 compatible**: in a multi-team organisation, external
+consumers cannot be found by traversing the producer's internal lineage graph — they are
+opaque. The registry is the only mechanism that works at all trust boundaries. The
+lineage graph adds depth information within Tier 1 but is not the authoritative source
+for *who is affected*. An FDE who treats lineage-only blast radius as complete will
+undercount affected subscribers at Tier 2.
 
 ---
 
@@ -602,6 +626,24 @@ distribution rather than a fixed snapshot from months ago.
 The `column_to_clause()` function generates enum values from `profile["sample_values"]`
 — the actual distinct values observed in the current data. If a new model name appears,
 re-running the generator on fresh data automatically adds it to the enum.
+
+**6. ContractRegistry forces explicit dependency tracking.**
+
+`contract_registry/subscriptions.yaml` requires every consumer to declare which fields
+they depend on and which changes would break them. Two consequences for staleness:
+
+- **Schema changes are visible before they ship.** A developer who renames
+  `fact_confidence` must update all subscriptions that reference that field —
+  creating a natural checklist before the change is merged.
+
+- **The registry is the blast radius for staleness alerts.** When the generator
+  detects that a contract is > 30 days old, it can query the registry to find every
+  subscriber and notify them directly (`contact` field). Without the registry, staleness
+  is silent because no one knows who depends on the contract.
+
+The registry does not prevent all staleness — a consumer can fail to update their
+subscription entry — but it shifts the default from *invisible dependency* to
+*declared dependency*, which is the minimum viable governance discipline.
 
 The one remaining gap: a human must decide when to re-run the generator. A fully
 automated system would trigger regeneration on every schema change detected in CI/CD.

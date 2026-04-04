@@ -1,0 +1,90 @@
+{
+  "contract_id": "langsmith_traces",
+  "snapshot_id": "e098261a-56f9-464d-b45a-f7328d3797c7",
+  "captured_at": "2026-04-04T15:26:38.314069Z",
+  "schema_version": "1.0.0",
+  "source_path": "outputs/traces/runs.jsonl",
+  "record_count": 60,
+  "sha256": "eb3cbc8cfc717d4d15fc57ec4e0ab7556442aacd669f444ba0ab5a762326d85d",
+  "properties": {
+    "id": {
+      "type": "string",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "AutomatonAuditorGraph",
+        "judge_prosecutor",
+        "pdf_chunk_retriever",
+        "repo_clone_sandbox",
+        "report_chunk_embed"
+      ]
+    },
+    "run_type": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "chain",
+        "embedding",
+        "llm",
+        "retriever",
+        "tool"
+      ]
+    },
+    "error": {
+      "type": "string",
+      "required": false
+    },
+    "start_time": {
+      "type": "string",
+      "required": true
+    },
+    "end_time": {
+      "type": "string",
+      "required": true
+    },
+    "total_tokens": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1,
+      "maximum": 5606.0
+    },
+    "prompt_tokens": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1,
+      "maximum": 4599.0
+    },
+    "completion_tokens": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1,
+      "maximum": 1088.0
+    },
+    "total_cost": {
+      "type": "number",
+      "required": true,
+      "minimum": 0.0153,
+      "maximum": 0.0168
+    },
+    "parent_run_id": {
+      "type": "string",
+      "required": false,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "session_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true,
+      "enum": [
+        "bd9e1b3d-c841-43fb-93b6-ad39b109a974"
+      ]
+    }
+  }
+}

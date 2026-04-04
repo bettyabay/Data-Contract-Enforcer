@@ -18,7 +18,7 @@ source:
   path: outputs/week2/verdicts.jsonl
   sha256: 43c30ff53bec2fbd7cccaaa4065acf6fdee9b9ccce3db21bdddffb5dfb4435a4
   record_count: 20
-  generated_at: '2026-04-02T14:43:51.445903Z'
+  generated_at: '2026-04-04T15:23:54.096523Z'
 schema:
   type: object
   properties:
@@ -93,4 +93,43 @@ quality:
     z_score_fail: 3.0
 lineage:
   upstream: []
-  downstream: []
+  downstream:
+  - id: week7-enforcer
+    description: 'Registered subscriber via ContractRegistry. Validation mode: AUDIT.'
+    fields_consumed:
+    - verdict_id
+    - overall_verdict
+    - overall_score
+    - confidence
+    - evaluated_at
+    breaking_if_changed:
+    - overall_verdict
+    - overall_score
+    - confidence
+    validation_mode: AUDIT
+    contact: week7-team@org.com
+llm_annotations:
+  target_ref:
+    description: A file path referencing the specific PDF document associated with
+      a verdict record
+    validation_expression: isinstance(v, str) and v.startswith('outputs/week3/') and
+      v.endswith('.pdf') and 'doc_' in v
+    cross_column_note: Likely connects to the verdict_id as a unique identifier for
+      document-specific verdict information
+  rubric_version:
+    description: Version number of the rubric used for creating the verdict
+    validation_expression: isinstance(v, str) and len(v.split('.')) == 3 and all(part.isdigit()
+      for part in v.split('.'))
+    cross_column_note: Should align with the specific rubric_id and represent the
+      version of the rubric evaluation framework
+  overall_verdict:
+    description: A categorical classification indicating the final assessment or outcome
+      of an evaluation process
+    validation_expression: v in ['PASS', 'WARN', 'FAIL']
+    cross_column_note: Should be linked to a specific verdict_id and correspond to
+      a particular rubric_id and version
+  overall_score:
+    description: A numerical score representing an overall rating or evaluation
+    validation_expression: isinstance(v, str) and float(v) >= 0 and float(v) <= 5.0
+    cross_column_note: Likely related to 'overall_verdict' column, with score providing
+      quantitative basis for qualitative verdict

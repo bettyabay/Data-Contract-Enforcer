@@ -1,13 +1,14 @@
 {
-  "report_id": "1b8e98af-3bd0-4f6b-996f-48d267dcddfc",
+  "report_id": "f3178033-6e12-41cc-ba66-cde3f2bce822",
   "contract_id": "langsmith_traces",
   "contract_version": "1.0.0",
   "snapshot_id": "eb3cbc8cfc717d4d15fc57ec4e0ab7556442aacd669f444ba0ab5a762326d85d",
-  "run_timestamp": "2026-04-02T14:44:54.714174Z",
+  "run_timestamp": "2026-04-04T15:27:21.919597Z",
   "data_path": "outputs/traces/runs.jsonl",
   "record_count": 60,
-  "total_checks": 0,
-  "passed": 0,
+  "enforcement_mode": "AUDIT",
+  "total_checks": 31,
+  "passed": 31,
   "failed": 0,
   "warned": 0,
   "errored": 0,
@@ -16,8 +17,8 @@
   "results": [],
   "violations": [],
   "summary": {
-    "CRITICAL": 0,
     "FAIL": 0,
-    "WARN": 0
+    "WARN": 0,
+    "ERROR": 0
   }
 }
