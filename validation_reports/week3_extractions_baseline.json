@@ -1,24 +1,25 @@
 {
-  "report_id": "7fe1dc76-f615-4e10-94db-ff4c6fea5464",
-  "contract_id": "week3_extractions",
-  "contract_version": "1.0.0",
-  "snapshot_id": "58439ea297638bb8c29c9c1c7c68be5ebc4542f57cc880604cac43f2787c9c4a",
-  "run_timestamp": "2026-04-04T15:27:16.021505Z",
-  "data_path": "outputs/week3/extractions.jsonl",
-  "record_count": 60,
-  "enforcement_mode": "AUDIT",
-  "total_checks": 42,
-  "passed": 42,
-  "failed": 0,
-  "warned": 0,
-  "errored": 0,
-  "overall_status": "PASS",
-  "violation_count": 0,
-  "results": [],
-  "violations": [],
-  "summary": {
-    "FAIL": 0,
-    "WARN": 0,
-    "ERROR": 0
+  "written_at": "2026-04-04T17:04:14.279737Z",
+  "columns": {
+    "processing_time_ms": {
+      "mean": 5030.45,
+      "stddev": 2948.6268413585044
+    },
+    "token_count_input": {
+      "mean": 7885.466666666666,
+      "stddev": 2416.208311367538
+    },
+    "token_count_output": {
+      "mean": 1109.5,
+      "stddev": 402.77455795744487
+    },
+    "fact_confidence": {
+      "mean": 85.225,
+      "stddev": 6.951769619336945
+    },
+    "fact_page_ref": {
+      "mean": 87.0,
+      "stddev": 52.60571589226607
+    }
   }
 }

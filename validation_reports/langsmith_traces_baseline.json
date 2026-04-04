@@ -20,5 +20,20 @@
     "FAIL": 0,
     "WARN": 0,
     "ERROR": 0
+  },
+  "embedding_centroid": {
+    "centroid": [
+      0.0,
+      1.0732000000000002,
+      0.5,
+      0.0
+    ],
+    "established_at": "2026-04-04T17:06:10.856622Z",
+    "record_count": 60
+  },
+  "output_violation_rate": {
+    "rate": 1.0,
+    "established_at": "2026-04-04T17:06:10.860663Z",
+    "record_count": 60
   }
 }
