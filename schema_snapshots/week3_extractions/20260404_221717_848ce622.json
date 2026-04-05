@@ -1,0 +1,109 @@
+{
+  "contract_id": "week3_extractions",
+  "snapshot_id": "7da5cf9f-89ef-46d1-bdeb-5837c834fe82",
+  "captured_at": "2026-04-04T22:17:17.880987Z",
+  "schema_version": "1.0.0",
+  "source_path": "outputs/week3/extractions.jsonl",
+  "record_count": 60,
+  "sha256": "58439ea297638bb8c29c9c1c7c68be5ebc4542f57cc880604cac43f2787c9c4a",
+  "properties": {
+    "doc_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "source_path": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "C:/Users/Hello/OneDrive/Desktop/Tenacious-Projects/layout-aware-document-intelligence-refinery/data/class_a/CBE_ANNUAL_REPORT_2023-24.pdf",
+        "C:/Users/Hello/OneDrive/Desktop/Tenacious-Projects/layout-aware-document-intelligence-refinery/data/class_b/2018_Audited_Financial_Statement_Report.pdf",
+        "C:/Users/Hello/OneDrive/Desktop/Tenacious-Projects/layout-aware-document-intelligence-refinery/data/class_b/Annual_Report_JUNE-2023.pdf"
+      ]
+    },
+    "source_hash": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "018fec7b6054d0fca56e5751f6b4b3b51f45ab08d97abe2494a7ebb272780f4f",
+        "4b51a9c5611db264bdf656e2b82f5a4df3dbb9fc120c0f031e5c7396b9bbb21e",
+        "c8c32b40171975a4df7ba4bb4cae73eeb6fd4d752a11e27307599279e7142764"
+      ]
+    },
+    "extraction_model": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "claude-3-5-sonnet-20241022"
+      ]
+    },
+    "processing_time_ms": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1,
+      "maximum": 9460.0
+    },
+    "token_count_input": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1,
+      "maximum": 11971.0
+    },
+    "token_count_output": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1,
+      "maximum": 1799.0
+    },
+    "extracted_at": {
+      "type": "string",
+      "required": true,
+      "format": "date-time",
+      "enum": [
+        "2026-04-02T14:20:36Z"
+      ]
+    },
+    "fact_fact_id": {
+      "type": "string",
+      "required": true,
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "unique": true
+    },
+    "fact_text": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "Interest income for the year ended 30 June 2024 was ETB 134,920 million.",
+        "Net profit for the year was ETB 34,280 million as of 30 June 2024.",
+        "The independent auditor's report covers the financial statements for the year ended 30 June 2023.",
+        "Total assets are reported as ETB 48,905 million at 30 June 2023."
+      ]
+    },
+    "fact_confidence": {
+      "type": "number",
+      "required": true,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score. MUST remain 0.0-1.0 float. BREAKING if changed to 0-100 percentage scale."
+    },
+    "fact_page_ref": {
+      "type": "integer",
+      "required": true,
+      "minimum": 1.0,
+      "maximum": 176.0
+    },
+    "fact_source_excerpt": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "...for the year ended 30 June 2023...",
+        "Interest income 134,920 (FY ended 30 June 2024)",
+        "Net profit for the year 34,280 (30 June 2024)",
+        "Total assets 48,905 (30 June 2023)"
+      ]
+    }
+  }
+}

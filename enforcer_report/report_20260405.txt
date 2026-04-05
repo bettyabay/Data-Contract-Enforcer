@@ -1,0 +1,39 @@
+========================================================================
+  DATA CONTRACT ENFORCER — ENFORCEMENT REPORT
+  Generated: 2026-04-04T23:39:08.354797Z
+========================================================================
+
+1. DATA HEALTH SCORE
+--------------------
+  Score     : 79.7 / 100
+  Narrative : Data quality is good — 1 critical issue(s) require monitoring but are not currently blocking downstream consumers.
+
+2. VIOLATIONS THIS WEEK
+-----------------------
+  CRITICAL: 1  |  HIGH: 0  |  MEDIUM: 0  |  LOW: 0
+
+  1. [FAIL] Document Refinery (Week 3 — Extraction Pipeline) / extracted_facts[*].confidence
+     Data max (98.0) exceeds contract maximum (1.0). confidence is in 0–100 range, not 0.0–1.0. Breaking change detected.
+     Downstream: week4-cartographer, week7-enforcer
+
+3. SCHEMA CHANGES (LAST 7 DAYS)
+-------------------------------
+  Document Refinery (Week 3 — Extraction Pipeline): UNKNOWN (0 breaking)
+
+4. AI SYSTEM RISK ASSESSMENT
+----------------------------
+  Embedding Drift       : UNKNOWN  — No embedding baseline found.
+  Prompt Input Valid.   : SKIP  — 
+  Output Violation Rate : PASS  — No baseline recorded.
+  Overall AI Status     : PASS
+  AI systems are operating within acceptable bounds.
+
+5. RECOMMENDED ACTIONS
+----------------------
+  1. [CRITICAL] Fix unknown: update the producer to output 'extracted_facts[*].confidence' within the bounds defined by contract week3_extractions clause extracted_facts.confidence.range. Attributed to: unknown (commit 00000000).
+
+  2. [INFO] Continue monitoring. Schedule weekly contract runs to catch drift before it reaches downstream consumers.
+
+  3. [INFO] Continue monitoring. Schedule weekly contract runs to catch drift before it reaches downstream consumers.
+
+========================================================================

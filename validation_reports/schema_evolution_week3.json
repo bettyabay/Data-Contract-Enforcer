@@ -1,0 +1,72 @@
+{
+  "contract_id": "week3_extractions",
+  "old_version": "1.0.0",
+  "new_version": "1.0.0",
+  "old_snapshot_at": "2026-04-04T15:30:46.647205Z",
+  "new_snapshot_at": "2026-04-04T15:35:00Z",
+  "overall_classification": "BREAKING",
+  "total_changes": 3,
+  "breaking_changes": 2,
+  "compatible_changes": 1,
+  "field_changes": [
+    {
+      "column": "fact_source_url",
+      "change_type": "add_nullable",
+      "classification": "COMPATIBLE",
+      "migration_note": "New optional field 'fact_source_url' added  -  backward-compatible.",
+      "details": {
+        "old": null,
+        "new": {
+          "type": "string",
+          "required": false
+        }
+      }
+    },
+    {
+      "column": "doc_id",
+      "change_type": "remove_field",
+      "classification": "BREAKING",
+      "migration_note": "Field 'doc_id' removed. Two-sprint minimum deprecation required. Each registry subscriber must acknowledge the removal.",
+      "details": {
+        "old": {
+          "type": "string",
+          "required": true,
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "unique": true
+        },
+        "new": null
+      }
+    },
+    {
+      "column": "fact_confidence",
+      "change_type": "narrow_type",
+      "classification": "BREAKING",
+      "migration_note": "Confidence scale changed 0.0-1.0 -> 0-100.0. CRITICAL: all downstream consumers using confidence as a probability (drift detection, edge-weight ranking) will be silently corrupted. Statistical baselines must be deleted and re-established post-migration.",
+      "details": {
+        "detected_scale_change": true,
+        "old": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "new": {
+          "minimum": 0,
+          "maximum": 100.0
+        }
+      }
+    }
+  ],
+  "possible_renames": [
+    {
+      "old_field": "doc_id",
+      "new_field": "fact_source_url",
+      "confidence": 0.8,
+      "reason": "Same type (string) and 2 matching constraints suggest rename. Minimum 2-sprint deprecation with alias required before removing old name."
+    }
+  ],
+  "migration_required": true,
+  "migration_notes": [
+    "Field 'doc_id' removed. Two-sprint minimum deprecation required. Each registry subscriber must acknowledge the removal.",
+    "Confidence scale changed 0.0-1.0 -> 0-100.0. CRITICAL: all downstream consumers using confidence as a probability (drift detection, edge-weight ranking) will be silently corrupted. Statistical baselines must be deleted and re-established post-migration."
+  ]
+}

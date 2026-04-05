@@ -19,7 +19,7 @@ source:
   path: outputs/week3/extractions.jsonl
   sha256: 58439ea297638bb8c29c9c1c7c68be5ebc4542f57cc880604cac43f2787c9c4a
   record_count: 60
-  generated_at: '2026-04-04T17:03:17.749539Z'
+  generated_at: '2026-04-04T22:28:47.018797Z'
 schema:
   type: object
   properties:
@@ -171,32 +171,3 @@ lineage:
     - extracted_facts.confidence
     validation_mode: AUDIT
     contact: week7-team@org.com
-llm_annotations:
-  source_path:
-    description: Local filesystem absolute path to a source PDF document
-    validation_expression: isinstance(v, str) and v.endswith('.pdf') and '/' in v
-    cross_column_note: Should correspond uniquely with source_hash via a consistent
-      mapping
-  source_hash:
-    description: A cryptographic hash representing the unique identity or content
-      fingerprint of the source document
-    validation_expression: isinstance(v, str) and len(v) == 64 and all(c in '0123456789abcdef'
-      for c in v)
-    cross_column_note: Likely generated from the source_path to ensure content integrity
-      and uniqueness
-  extraction_model:
-    description: The name of the AI model used to perform the extraction/processing
-      task.
-    validation_expression: isinstance(v, str) and len(v) > 0 and '/' not in v
-    cross_column_note: Likely correlates with the processing_time_ms column, indicating
-      performance characteristics of the specific model
-  processing_time_ms:
-    description: The time taken to process a document extraction in milliseconds
-    validation_expression: isinstance(v, (int, str)) and int(v) >= 0
-    cross_column_note: Processing time might correlate with extraction complexity,
-      potentially related to extraction_model
-  token_count_input:
-    description: Number of tokens processed in an input document during extraction
-    validation_expression: isinstance(v, str) and v.isdigit() and int(v) >= 0
-    cross_column_note: Should align with document complexity and processing time in
-      adjacent columns

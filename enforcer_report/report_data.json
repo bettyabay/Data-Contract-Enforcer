@@ -1,0 +1,144 @@
+{
+  "report_id": "3b832ebe-2c4a-488c-89ad-2dc41dcab632",
+  "generated_at": "2026-04-04T23:39:08.354797Z",
+  "health_score": {
+    "score": 79.7,
+    "narrative": "Data quality is good \u2014 1 critical issue(s) require monitoring but are not currently blocking downstream consumers."
+  },
+  "summary": {
+    "contracts_checked": 6,
+    "contract_ids": [
+      "langsmith_traces",
+      "week1_intent_records",
+      "week2_verdicts",
+      "week3_extractions",
+      "week4_lineage",
+      "week5_events"
+    ],
+    "total_checks": 339,
+    "passed": 338,
+    "failed": 1,
+    "warned": 0,
+    "errored": 0,
+    "critical": 1,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "violations_attributed": 1
+  },
+  "top_violations": [
+    {
+      "system": "Document Refinery (Week 3 \u2014 Extraction Pipeline)",
+      "contract_id": "week3_extractions",
+      "field": "extracted_facts[*].confidence",
+      "check_type": "range",
+      "status": "FAIL",
+      "records_failing": 120,
+      "message": "Data max (98.0) exceeds contract maximum (1.0). confidence is in 0\u2013100 range, not 0.0\u20131.0. Breaking change detected.",
+      "downstream_impact": "week4-cartographer, week7-enforcer",
+      "top_blame": "unknown"
+    }
+  ],
+  "schema_changes": [
+    {
+      "contract_id": "week3_extractions",
+      "system": "Document Refinery (Week 3 \u2014 Extraction Pipeline)",
+      "compatibility_verdict": "UNKNOWN",
+      "breaking_count": 0,
+      "compatible_count": 0,
+      "change_summaries": [],
+      "actions_required": []
+    }
+  ],
+  "ai_risk": {
+    "embedding_drift": {
+      "status": "UNKNOWN",
+      "detail": "No embedding baseline found."
+    },
+    "output_violation_rate": {
+      "status": "PASS",
+      "detail": "No baseline recorded."
+    },
+    "overall_ai_status": "PASS",
+    "summary": "AI systems are operating within acceptable bounds."
+  },
+  "recommended_actions": [
+    {
+      "priority": 1,
+      "risk_level": "CRITICAL",
+      "action": "Fix unknown: update the producer to output 'extracted_facts[*].confidence' within the bounds defined by contract week3_extractions clause extracted_facts.confidence.range. Attributed to: unknown (commit 00000000).",
+      "contract_id": "week3_extractions",
+      "field": "extracted_facts[*].confidence"
+    },
+    {
+      "priority": 2,
+      "risk_level": "INFO",
+      "action": "Continue monitoring. Schedule weekly contract runs to catch drift before it reaches downstream consumers.",
+      "contract_id": "all",
+      "field": "n/a"
+    },
+    {
+      "priority": 3,
+      "risk_level": "INFO",
+      "action": "Continue monitoring. Schedule weekly contract runs to catch drift before it reaches downstream consumers.",
+      "contract_id": "all",
+      "field": "n/a"
+    }
+  ],
+  "validation_reports": [
+    {
+      "report_id": "f3178033-6e12-41cc-ba66-cde3f2bce822",
+      "contract_id": "langsmith_traces",
+      "run_timestamp": "2026-04-04T15:27:21.919597Z",
+      "overall_status": "PASS",
+      "total_checks": 31,
+      "failed": 0,
+      "warned": 0
+    },
+    {
+      "report_id": "8e90850c-eab1-45b5-ae5e-c8beca9583cc",
+      "contract_id": "week1_intent_records",
+      "run_timestamp": "2026-04-04T15:27:12.374526Z",
+      "overall_status": "PASS",
+      "total_checks": 22,
+      "failed": 0,
+      "warned": 0
+    },
+    {
+      "report_id": "e20b7a74-d2c6-416e-94c5-2ba8847a7510",
+      "contract_id": "week2_verdicts",
+      "run_timestamp": "2026-04-04T15:27:13.839172Z",
+      "overall_status": "PASS",
+      "total_checks": 21,
+      "failed": 0,
+      "warned": 0
+    },
+    {
+      "report_id": "4e599492-bf2a-4deb-bffe-e05fbc7b7795",
+      "contract_id": "week3_extractions",
+      "run_timestamp": "2026-04-04T22:30:24.313990Z",
+      "overall_status": "FAIL",
+      "total_checks": 42,
+      "failed": 1,
+      "warned": 0
+    },
+    {
+      "report_id": "94a7b98d-56d1-429a-94b5-0a9c8ddce30c",
+      "contract_id": "week4_lineage",
+      "run_timestamp": "2026-04-04T15:27:17.924215Z",
+      "overall_status": "PASS",
+      "total_checks": 14,
+      "failed": 0,
+      "warned": 0
+    },
+    {
+      "report_id": "d5461a7f-5afb-4e6e-a47d-9c839941bb92",
+      "contract_id": "week5_events",
+      "run_timestamp": "2026-04-04T15:27:19.421350Z",
+      "overall_status": "PASS",
+      "total_checks": 209,
+      "failed": 0,
+      "warned": 0
+    }
+  ]
+}

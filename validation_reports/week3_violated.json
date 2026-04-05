@@ -1,0 +1,58 @@
+{
+  "report_id": "4e599492-bf2a-4deb-bffe-e05fbc7b7795",
+  "contract_id": "week3_extractions",
+  "contract_version": "1.0.0",
+  "snapshot_id": "c87b11615bfbcbf16ee0afd15b6b916b528db2b7be5e413315deb2736e783626",
+  "run_timestamp": "2026-04-04T22:30:24.313990Z",
+  "data_path": "outputs/week3/extractions_violated.jsonl",
+  "record_count": 60,
+  "enforcement_mode": "ENFORCE",
+  "total_checks": 42,
+  "passed": 41,
+  "failed": 1, 
+  "warned": 0,
+  "errored": 0,
+  "overall_status": "FAIL",
+  "violation_count": 1,
+  "results": [
+    {
+      "check_id": "week3_extractions.extracted_facts.confidence.range",
+      "column_name": "extracted_facts[*].confidence",
+      "check_type": "range",
+      "status": "FAIL",
+      "actual_value": "max=98.0, mean=85.2250",
+      "expected": "max<=1.0, min>=0.0",
+      "severity": "CRITICAL",
+      "records_failing": 120,
+      "message": "Data max (98.0) exceeds contract maximum (1.0). confidence is in 0\u2013100 range, not 0.0\u20131.0. Breaking change detected.",
+      "sample_failing": [
+        "e03fccde-2501-4f36-88f4-5350e522fb81",
+        "d9b558d9-25b2-4672-a5e1-bb18407efc9a",
+        "0f27e1cf-ec69-4b17-938f-0f80eb6f50f6",
+        "ef9d1d21-2333-4ec6-9f2a-8084fdbb59e6",
+        "5249c4a1-835e-481b-ac35-1e782bf500bf"
+      ]
+    }
+  ],
+  "violations": [
+    {
+      "status": "FAIL",
+      "severity": "CRITICAL",
+      "check": "range",
+      "field": "extracted_facts[*].confidence",
+      "reason": "Data max (98.0) exceeds contract maximum (1.0). confidence is in 0\u2013100 range, not 0.0\u20131.0. Breaking change detected.",
+      "sample": [
+        "e03fccde-2501-4f36-88f4-5350e522fb81",
+        "d9b558d9-25b2-4672-a5e1-bb18407efc9a",
+        "0f27e1cf-ec69-4b17-938f-0f80eb6f50f6",
+        "ef9d1d21-2333-4ec6-9f2a-8084fdbb59e6",
+        "5249c4a1-835e-481b-ac35-1e782bf500bf"
+      ]
+    }
+  ],
+  "summary": {
+    "FAIL": 1,
+    "WARN": 0,
+    "ERROR": 0
+  }
+}
